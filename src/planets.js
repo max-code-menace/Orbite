@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { icons } from './icons.js';
+import { creerDecor, decorsLibres, typesLibres } from './decors.js';
 
 // Les couleurs de chaque planète (le style reste dans le code,
 // le nom et les liens sont dans systeme.json).
@@ -130,7 +131,9 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
   const planetes = [];
 
   donnees.planetes.forEach((p, i) => {
-    const theme = themes[p.id] ?? themes.libre;
+    // La planète libre tire son décor (et ses couleurs) au hasard.
+    const typeLibre = themes[p.id] && p.id !== 'libre' ? null : typesLibres[Math.floor(Math.random() * typesLibres.length)];
+    const theme = typeLibre ? decorsLibres[typeLibre].couleurs : themes[p.id];
     const place = places[p.id] ?? { rayon: 2.6 + i * 0.7, angle: i * 72 };
 
     plan.add(creerOrbite(place.rayon));
@@ -143,6 +146,9 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
 
     const ile = creerIle(theme);
     pivot.add(ile);
+    const decor = creerDecor(p.id, typeLibre);
+    ile.add(decor.surIle);
+    if (decor.autour) pivot.add(decor.autour);
     pivot.add(creerAnneau(theme.anneau, 1.25));
 
     // La zone à toucher : une boule invisible, plus grosse que l'île,
@@ -173,6 +179,7 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
       ile,
       zone,
       theme,
+      decor,
       etiquette,
       phase: i * 1.3,
       baseY: base.y,
@@ -186,6 +193,7 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
       // Chaque planète flotte légèrement et tourne lentement sur elle-même.
       p.pivot.position.y = p.baseY + Math.sin(elapsed * 0.9 + p.phase) * 0.12 * motion;
       p.ile.rotation.y = elapsed * 0.25 + p.phase;
+      p.decor.update?.(elapsed);
 
       // L'étiquette suit la planète, juste au-dessus d'elle.
       point.set(0, 1.0, 0);
