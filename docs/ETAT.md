@@ -15,6 +15,19 @@ Dernière mise à jour : 10 novembre 2026, session 5 (voyage entre systèmes fus
 | 7 | Petites créatures décoratives (facultatives, à retirer en premier si ça rame) | ✅ fait, testé en simulation ; **pas encore vu ni mesuré sur appareil** |
 | 8 | Derniers réglages de fluidité + checklist des critères de réussite du brief | ⏳ à faire |
 
+## Pour la prochaine conversation (à lire en premier)
+
+1. **Fusionner la PR n°10** (thèmes + `docs/VISION.md`) : la personne la fusionne, ou dit « Merge ». Vérifier ensuite GitHub Actions.
+   Si la branche de session a déjà été fusionnée, la repartir de la branche principale (`git checkout -B <branche> origin/ccr-be406ff5-wxbiv4`).
+2. **Elle essaie sur son téléphone** : `https://max-code-menace.github.io/Orbite/?fps&v=15#luna` (voyage, thèmes, amis). Reprendre
+   ses retours (fluidité, geste au pouce, amis trop discrets ?) avant d'ajouter quoi que ce soit.
+3. **Étape suivante proposée, acceptée dans son principe (« on fait la suite ») : l'écran « Choisis ta galaxie »**. Un bouton
+   « Galaxies » près du profil ouvre un écran avec les thèmes en grandes cartes (nom, nombre de systèmes, illustration colorée) ;
+   ‹ › ou glisser pour faire défiler ; toucher une carte ferme l'écran et va au premier système du thème. Un lien en bio (`#noe`)
+   arrive toujours **directement** sur le système. Premier jet en 2D (pas de vraie galaxie 3D : la fluidité de la tablette
+   d'abord). Plus tard : écran de traversée « Direction la galaxie… » (voir `docs/VISION.md`).
+4. Pas de serveur tant qu'elle n'a pas vu si ses copains accrochent. Les systèmes restent des exemples inventés (« (exemple) »).
+
 ## Où on s'est arrêté (session 5)
 
 - **Étape « thèmes » faite** (branche de session, à fusionner), 1re étape vers `docs/VISION.md` : `galaxie.json` a une liste
