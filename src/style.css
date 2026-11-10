@@ -64,10 +64,8 @@ body {
   gap: 6px;
   padding: 5px 12px 5px 8px;
   border-radius: 999px;
-  background: rgba(30, 14, 60, 0.72);
+  background: rgba(30, 14, 60, 0.86);
   border: 1px solid rgba(200, 160, 255, 0.35);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
@@ -85,12 +83,15 @@ body {
   height: 100%;
 }
 
-/* --- Verre dépoli, commun au profil et à l'Accès rapide ------------------ */
+/* --- « Verre », commun au profil, à l'Accès rapide et au panneau ---------------
+   Pas de vrai flou (backdrop-filter) : sur Android, flouter une 3D qui bouge
+   coûte très cher à chaque image. Un fond violet presque opaque, avec un léger
+   reflet en haut, donne le même effet visuel pour presque rien. */
 .verre {
-  background: rgba(28, 14, 58, 0.78);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 40%),
+    rgba(30, 15, 62, 0.92);
   border: 1px solid rgba(200, 160, 255, 0.22);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
   box-shadow: 0 10px 40px rgba(10, 0, 30, 0.45);
 }
 

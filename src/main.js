@@ -7,13 +7,19 @@ import { remplirProfil, creerAccesRapide, creerPanneau, ecranLarge } from './ui.
 const container = document.getElementById('scene');
 
 // --- Le moteur de dessin -------------------------------------------------
-// Résolution limitée à 2x : au-delà, l'œil ne voit pas la différence
-// mais le téléphone chauffe.
-const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+// Résolution limitée : au plus 2x, et au plus ~2,2 millions de points dessinés
+// à chaque image. Au-delà, l'œil ne voit pas la différence mais le téléphone
+// (surtout une tablette, avec son grand écran) rame et chauffe.
+const BUDGET_PIXELS = 2.2e6;
+function calculerPixelRatio() {
+  const ecran = window.innerWidth * window.innerHeight;
+  return Math.max(1, Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(BUDGET_PIXELS / ecran)));
+}
+let pixelRatio = calculerPixelRatio();
 
 const renderer = new THREE.WebGLRenderer({
-  antialias: pixelRatio < 2, // inutile sur les écrans très fins, coûteux
-  alpha: true, // transparent : on voit le dégradé du ciel dessiné en CSS
+  antialias: pixelRatio < 1.5, // inutile sur les écrans fins, coûteux
+  alpha: false, // opaque : le navigateur n'a pas à mélanger la 3D avec la page
   powerPreference: 'high-performance',
 });
 renderer.setPixelRatio(pixelRatio);
@@ -22,6 +28,33 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 container.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
+
+// Le ciel (dégradé bleu nuit et violet) est dessiné une seule fois dans une petite
+// image, puis affiché en fond par la 3D elle-même.
+function creerCiel() {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 512;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#0d0820';
+  ctx.fillRect(0, 0, c.width, c.height);
+  const taches = [
+    [0.5, 0.5, 0.75, 'rgba(36,16,71,1)'],
+    [0.7, 0.3, 0.55, 'rgba(155,70,230,0.35)'],
+    [0.15, 0.75, 0.5, 'rgba(60,80,220,0.3)'],
+  ];
+  for (const [x, y, r, couleur] of taches) {
+    const g = ctx.createRadialGradient(x * 256, y * 512, 0, x * 256, y * 512, r * 512);
+    g.addColorStop(0, couleur);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, c.width, c.height);
+  }
+  const texture = new THREE.CanvasTexture(c);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+scene.background = creerCiel();
 
 // Caméra au-dessus du système, penchée vers le centre, comme sur les maquettes.
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 200);
@@ -237,6 +270,9 @@ function resize() {
   repos.offY = h / 2 - (haut + zone / 2);
 
   Object.assign(cadre, { haut, centreX: largeur / 2, w, h });
+  pixelRatio = calculerPixelRatio();
+  renderer.setPixelRatio(pixelRatio);
+  stars.material.uniforms.uPixelRatio.value = pixelRatio;
   renderer.setSize(w, h);
 }
 window.addEventListener('resize', resize);
