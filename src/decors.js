@@ -195,7 +195,9 @@ function decorSpotify() {
     barres.instanceMatrix.needsUpdate = true;
   }
   update(0);
-  return { surIle: groupe, update };
+  // Une valeur qui change quand les barres bougent (sert au test automatique).
+  const signature = () => barres.instanceMatrix.array[5];
+  return { surIle: groupe, update, signature };
 }
 
 function decorVoyage() {
@@ -232,7 +234,8 @@ function decorVoyage() {
     avion.position.y = Math.sin(t * 2) * 0.04;
     avion.rotation.x = Math.sin(t * 2) * 0.15; // il penche un peu dans le virage
   }
-  return { surIle: a.objet(), autour: orbite, update };
+  const signature = () => orbite.rotation.y;
+  return { surIle: a.objet(), autour: orbite, update, signature };
 }
 
 // --- La planète libre : cinq décors possibles --------------------------------

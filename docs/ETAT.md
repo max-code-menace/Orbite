@@ -10,7 +10,7 @@ Dernière mise à jour : 10 novembre 2026, après l'étape 5 et la mise en place
 | 2 | 5 îles flottantes, orbites en pointillé, anneaux néon, étiquettes | ✅ fait, validé sur appareil |
 | 3 | Profil en haut, Accès rapide en bas (glissable), système cadré entre les deux | ✅ fait, validé sur appareil |
 | 4 | Toucher une planète : caméra qui s'approche + panneau de liens | ✅ fait, validé sur appareil |
-| 5 | Décors des îles | ✅ fait ; envoyé, **pas encore mesuré sur appareil** (fluidité à vérifier) |
+| 5 | Décors des îles | ✅ fait, testé en simulation ; **pas encore mesuré sur appareil** (fluidité, animations, 3 décors libres jamais vus sur appareil) |
 | 6 | Bouton « Changer de décor » sur la planète libre, avec animation | ⏳ à faire |
 | 7 | Petites créatures décoratives (facultatives, à retirer en premier si ça rame) | ⏳ à faire |
 | 8 | Derniers réglages de fluidité + checklist des critères de réussite du brief | ⏳ à faire |
@@ -38,6 +38,7 @@ Dernière mise à jour : 10 novembre 2026, après l'étape 5 et la mise en place
 | `src/style.css` | Styles. Pas de `backdrop-filter`. |
 | `scripts/verifier-donnees.mjs` | Vérifie `systeme.json` (JSON valide, 5 planètes, liens en https). |
 | `scripts/test-mobile.mjs` | Test Playwright sur téléphone et tablette : 3D affichée, étiquettes, Accès rapide, ouverture/fermeture du panneau, aucune erreur. Captures dans `test-resultats/`. |
+| `.claude/agents/relecteur.md` | Agent relecteur sceptique : à lancer avant d'annoncer qu'une étape est finie (verdict PRÊT / PAS PRÊT, preuves). |
 | `.github/workflows/deploy.yml` | Sur chaque envoi : `npm run verifier`. Sur la branche principale seulement, et si tout passe : mise en ligne GitHub Pages. |
 
 ## Décisions prises (et pourquoi)
@@ -57,6 +58,14 @@ Dernière mise à jour : 10 novembre 2026, après l'étape 5 et la mise en place
   permettre de le changer sans recharger : il faudra pouvoir recolorer l'île (`creerIle`) et remplacer `decor.surIle`.
 
 ## Ce qu'il faut savoir pour la suite
+
+- **Les tests tournent sur un téléphone et une tablette simulés** (Chromium, 3D logicielle), pas sur les vrais
+  appareils ni sur Safari. Fluidité réelle, toucher au pouce, chaleur, plein soleil : à mesurer par la personne.
+- `window.orbite.planetes()` expose (en lecture seule) l'état des décors pour le test automatique.
+- Jusqu'ici (session 1), le travail se faisait directement sur la branche principale : chaque envoi était mis en
+  ligne sans pull request. À partir de la session 2 : branche de session + pull request fusionnée par la personne.
+- Poids de la page : ~616 Ko de JavaScript (~157 Ko compressés), surtout Three.js. À surveiller pour le critère
+  « s'ouvre en moins de 3 s en 4G » (étape 8).
 
 - Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=9`).
 - Le compte GitHub Pages est activé avec la source « GitHub Actions ». La branche principale du dépôt est

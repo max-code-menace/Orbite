@@ -111,8 +111,30 @@ fetch('./systeme.json')
     systeme = creerPlanetes(donnees, conteneurEtiquettes, choisir);
     scene.add(systeme.groupe);
     resize();
+    exposerEtatPourTests();
   })
   .catch((err) => console.error('Impossible de lire systeme.json', err));
+
+// --- État lisible par le test automatique (scripts/test-mobile.mjs) ----------
+// Lecture seule : ça ne change rien à la page, ça permet juste au test de
+// vérifier ce qu'une capture d'écran ne prouve pas (décors présents, animations).
+function exposerEtatPourTests() {
+  window.orbite = {
+    planetes: () =>
+      systeme.planetes.map((p) => {
+        let sommets = 0;
+        p.decor.surIle.traverse((o) => {
+          if (o.geometry) sommets += o.geometry.attributes.position.count;
+        });
+        return {
+          id: p.donnees.id,
+          typeLibre: p.typeLibre,
+          sommetsDecor: sommets,
+          signature: p.decor.signature ? p.decor.signature() : null,
+        };
+      }),
+  };
+}
 
 // --- Toucher une planète -------------------------------------------------
 let focus = null; // l'index de la planète ouverte, ou null

@@ -180,6 +180,7 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
       zone,
       theme,
       decor,
+      typeLibre,
       etiquette,
       phase: i * 1.3,
       baseY: base.y,
