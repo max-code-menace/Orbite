@@ -39,6 +39,9 @@ La personne n'est pas développeuse. Elle teste sur un iPhone 15 et une tablette
 - **Ne désactive, n'affaiblis et ne contourne jamais un test pour le faire passer.** Corrige le code.
 - **Une fonctionnalité nouvelle = une vérification nouvelle** dans `scripts/test-mobile.mjs`
   (ex. le bouton « Changer de décor » change bien le décor).
+- **Avant d'annoncer qu'une étape est terminée**, lance l'agent `relecteur` (`.claude/agents/relecteur.md`) en lui
+  donnant ce que tu comptes annoncer. S'il répond PAS PRÊT, corrige d'abord. Transmets honnêtement à la personne
+  ce qu'il signale comme « non vérifié ».
 - Le même `npm run verifier` tourne sur GitHub à chaque envoi (`.github/workflows/deploy.yml`). Si un test échoue,
   rien n'est mis en ligne. **Après chaque envoi, vérifie le résultat sur GitHub Actions** et annonce-le.
 
