@@ -2,7 +2,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { creerDecor, tirerAutreType, typesLibres } from '../src/decors.js';
-import { BUDGET_PIXELS, PALIERS, calculerRatio, palierApres } from '../src/fluidite.js';
+import { creerCreature, pose } from '../src/creatures.js';
+import { BUDGET_PIXELS, PALIERS, calculerRatio, creaturesVisibles, palierApres } from '../src/fluidite.js';
 
 const ecrans = {
   'iPhone 15': [393, 852, 3],
@@ -54,4 +55,60 @@ const sommets = (objet) => {
 test('chaque île a un décor construit (y compris les 5 décors libres)', () => {
   for (const id of ['instagram', 'youtube', 'spotify', 'voyage']) assert.ok(sommets(creerDecor(id).surIle) > 50, id);
   for (const t of typesLibres) assert.ok(sommets(creerDecor('libre', t).surIle) > 50, t);
+});
+
+// --- Étape 7 : les créatures ---------------------------------------------------
+
+test('le mode allégé retire les créatures en premier, avant de baisser la finesse', () => {
+  assert.equal(creaturesVisibles(0), true);
+  for (let p = 1; p < PALIERS.length; p++) assert.equal(creaturesVisibles(p), false, `palier ${p}`);
+  for (const [nom, [l, h, d]] of Object.entries(ecrans)) {
+    assert.equal(calculerRatio(l, h, d, 1), calculerRatio(l, h, d, 0), `${nom} : la finesse baisse dès le 1er cran`);
+    assert.ok(calculerRatio(l, h, d, 2) <= calculerRatio(l, h, d, 1), nom);
+  }
+});
+
+test('chaque planète a sa créature, en un seul objet 3D', () => {
+  const tailles = new Set();
+  for (const [i, id] of ['instagram', 'youtube', 'spotify', 'voyage', 'libre'].entries()) {
+    const c = creerCreature(id, '#ff00ff', i);
+    assert.equal(c.objet.children.length, 1, `${id} : pièces non fusionnées`);
+    const n = sommets(c.objet);
+    assert.ok(n > 100, `${id} : ${n} sommets`);
+    tailles.add(n);
+  }
+  assert.equal(tailles.size, 5, 'chaque créature devrait avoir un accessoire différent');
+});
+
+test('une créature saute ou tourne la tête de temps en temps, et se repose entre-temps', () => {
+  const poses = Array.from({ length: 800 }, (_, i) => pose(i / 100, 3.5));
+  assert.ok(
+    poses.some((p) => p.saut > 0.05),
+    'jamais de saut',
+  );
+  assert.ok(
+    poses.some((p) => Math.abs(p.tour) > 0.3),
+    'ne tourne jamais la tête',
+  );
+  const repos = poses.filter((p) => p.saut === 0 && p.tour === 0).length;
+  assert.ok(repos > poses.length / 2, 'bouge presque tout le temps');
+  for (const p of poses) assert.ok(p.saut >= 0 && p.saut < 0.15 && p.ecrase > 0.8 && p.ecrase < 1.2);
+});
+
+test('« réduire les animations » : la créature reste immobile', () => {
+  const c = creerCreature('spotify', '#3dff7a', 0);
+  const vues = new Set();
+  for (let t = 0; t < 10; t += 0.05) {
+    c.update(t, true);
+    vues.add(c.signature());
+  }
+  assert.equal(vues.size, 1);
+});
+
+test('la créature de la planète libre change de couleur avec le décor', () => {
+  const c = creerCreature('libre', '#7dff9a', 4);
+  const avant = c.objet.children[0];
+  c.recolorer('#ff7a2a');
+  assert.notEqual(c.objet.children[0], avant);
+  assert.equal(c.objet.children.length, 1, "l'ancienne créature n'a pas été retirée");
 });
