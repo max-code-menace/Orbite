@@ -13,6 +13,17 @@
 
     <header id="profil" class="verre"></header>
 
+    <!-- La bande « amis » : flèches précédent / suivant et amis du système affiché (remplie par amis.js) -->
+    <nav id="amis" aria-label="Voyager vers un autre système">
+      <button class="amis-fleche" type="button" data-sens="-1" aria-label="Système précédent">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <div class="amis-liste"></div>
+      <button class="amis-fleche" type="button" data-sens="1" aria-label="Système suivant">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </nav>
+
     <section id="acces" class="verre" aria-label="Accès rapide">
       <button class="acces-entete" type="button" aria-label="Ouvrir ou fermer l'Accès rapide">
         <span class="acces-poignee"></span>

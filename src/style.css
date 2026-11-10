@@ -34,6 +34,8 @@ body {
   display: block;
   width: 100%;
   height: 100%;
+  /* Le doigt peut balayer à l'horizontale (changer de système) : le navigateur ne doit pas le prendre pour lui. */
+  touch-action: none;
 }
 
 /* Petit compteur d'images par seconde, affiché seulement avec ?fps à la fin du lien. */
@@ -353,6 +355,7 @@ body {
   font-family: inherit;
   cursor: pointer;
   transition: opacity 0.25s;
+  touch-action: none; /* un balayage qui démarre sur une étiquette change de système */
 }
 
 /* Quand une planète est ouverte, les étiquettes s'effacent. */
@@ -545,5 +548,113 @@ body.focus .etiquette {
   body.focus #acces {
     opacity: 0;
     pointer-events: none;
+  }
+}
+
+/* --- La bande « amis » : sous le profil, flèches + amis de la personne ------- */
+#amis {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 82px); /* ajusté par main.js : juste sous le profil */
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(calc(100% - 24px), 480px);
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 5;
+}
+
+.amis-fleche {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 160, 255, 0.35);
+  background: rgba(30, 14, 60, 0.92);
+  color: inherit;
+  cursor: pointer;
+}
+
+.amis-fleche svg {
+  width: 22px;
+  height: 22px;
+}
+
+.amis-liste {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  touch-action: pan-x;
+}
+
+.amis-liste::-webkit-scrollbar {
+  display: none;
+}
+
+.amis-titre {
+  flex: none;
+  padding: 0 4px 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #d8c4ff;
+}
+
+.ami {
+  flex: none;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px 0 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(200, 160, 255, 0.35);
+  background: rgba(30, 14, 60, 0.92);
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ami-rond {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c86bff, #5a8cff);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Quand une planète est ouverte, la bande s'efface derrière le panneau. */
+#amis {
+  transition: opacity 0.25s;
+}
+
+body.focus #amis {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (orientation: landscape) and (min-width: 700px) {
+  #amis {
+    left: 16px;
+    transform: none;
+    width: min(420px, calc(100% - 400px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #amis {
+    transition-duration: 0.01s;
   }
 }

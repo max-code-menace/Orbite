@@ -1,6 +1,6 @@
 # Orbite — état du projet
 
-Dernière mise à jour : 10 novembre 2026, fin de session 4 (G1 fusionnée et en ligne ; galaxie mise en pause).
+Dernière mise à jour : 10 novembre 2026, session 5 (étape « voyage entre systèmes » faite, à essayer sur appareil).
 
 ## Le plan en 8 étapes
 
@@ -14,6 +14,27 @@ Dernière mise à jour : 10 novembre 2026, fin de session 4 (G1 fusionnée et en
 | 6 | Bouton « Changer de décor » sur la planète libre, avec animation | ✅ fait ; mesuré : iPhone 15 à 60 img/s, tablette à 83-90 img/s |
 | 7 | Petites créatures décoratives (facultatives, à retirer en premier si ça rame) | ✅ fait, testé en simulation ; **pas encore vu ni mesuré sur appareil** |
 | 8 | Derniers réglages de fluidité + checklist des critères de réussite du brief | ⏳ à faire |
+
+## Où on s'est arrêté (session 5)
+
+- **Réflexion de la session 5** : le visiteur d'un lien en bio ne reste que s'il a « quelque chose à lui ». Direction choisie
+  avec la personne, **sans serveur** (on teste d'abord avec ses copains, systèmes ajoutés à la main dans `galaxie.json`) :
+  A) « Fais le tien » (formulaire qui prépare un message, rien d'enregistré) — **pas encore fait** ;
+  B) « Ses amis » + se perdre en défilant, façon Reels mais **à l'horizontale** (le vertical sert déjà à l'Accès rapide
+  et au panneau). Les exemples inventés (« (exemple) ») suffisent pour l'instant.
+- **Étape « voyage » faite** (branche de session, à fusionner) : balayage gauche/droite sur la 3D, ou flèches, pour passer au
+  système suivant/précédent (ordre de la liste, on revient au début au bout) ; bande « Amis » sous le profil (toucher un ami
+  ouvre son système) ; l'adresse `…/#noe` ouvre directement un système et suit les voyages ; animation de sortie (0,18 s) et
+  d'entrée (0,28 s), instantanée avec « réduire les animations ». Le balayage est ignoré quand une planète est ouverte.
+  Données : champ facultatif `amis` (ids, 6 au plus, pas soi-même) dans `galaxie.json`, validé.
+- **Vérifié (simulation)** : tests rapides 61/61 ; `npm run verifier` ✅ téléphone + tablette (balayage, flèches, amis,
+  adresse, adresse abîmée/inconnue, adresse changée en plein voyage, planète ouverte, « réduire les animations ») ;
+  12 voyages de suite : nombre de formes 3D gardées stable (52 → 52, test tolérant : il attrape une grosse fuite, pas une
+  petite) ; captures regardées ; agents `securite` PRÊT et `relecteur` (a demandé cette mise à jour d'ÉTAT + 2 corrections d'adresse, faites).
+- **Pas vérifié (à faire sur tes appareils)** : fluidité réelle à chaque voyage (iPhone 15, S10 Lite) ; geste au pouce et
+  Safari ; ressenti de l'animation (seuls départ et arrivée sont testés) ; matières 3D non libérées à chaque voyage
+  (volontaire : partagées) ; **l'envie de continuer** (impossible à mesurer avec des systèmes inventés).
+- **Suite possible** : « Fais le tien » ; « Surprends-moi » ; mettre les amis d'abord dans l'ordre du défilé ; thèmes.
 
 ## Où on s'est arrêté (session 4)
 
@@ -61,6 +82,8 @@ Dernière mise à jour : 10 novembre 2026, fin de session 4 (G1 fusionnée et en
 | `src/planets.js` | Îles flottantes, anneaux, orbites, étiquettes HTML, zones de toucher invisibles, couleurs par planète. |
 | `src/decors.js` | Décors des îles. `Assemblage` fusionne les pièces fixes d'une île en un seul objet. Décors de la planète libre : `decorsLibres` (foret, cristaux, champignons, glace, volcan). |
 | `src/creatures.js` | Étape 7 : la petite bestiole de chaque île (corps rond, yeux, accessoire), fusionnée en un seul objet ; son saut / tour de tête (`pose`). |
+| `src/parcours.js` | Voyage entre systèmes : adresse `#id`, suivant/précédent, amis, sens d'un balayage (logique pure, testée). |
+| `src/amis.js` | La bande sous le profil : flèches précédent/suivant et amis du système affiché. |
 | `src/ui.js` | Profil, Accès rapide (feuille glissable ; colonne fixe sur tablette à l'horizontale), panneau d'une planète. |
 | `src/icons.js` | Icônes maison (pas de vrais logos). |
 | `src/style.css` | Styles. Pas de `backdrop-filter`. |
@@ -112,7 +135,7 @@ Dernière mise à jour : 10 novembre 2026, fin de session 4 (G1 fusionnée et en
 - Poids de la page : ~616 Ko de JavaScript (~157 Ko compressés), surtout Three.js. À surveiller pour le critère
   « s'ouvre en moins de 3 s en 4G » (étape 8).
 
-- Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=13`).
+- Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=14`).
 - Le compte GitHub Pages est activé avec la source « GitHub Actions ». La branche principale du dépôt est
   `ccr-be406ff5-wxbiv4` : c'est elle qui est mise en ligne.
 - Étape 8 : le brief demande aussi « moins d'étoiles, pas de lueurs » dans le mode allégé ; aujourd'hui seuls les

@@ -24,6 +24,20 @@ export function verifierGalaxie(galaxie) {
     else ids.add(s.id);
     for (const e of verifierDonnees(s)) erreurs.push(`${qui} : ${e}`);
   });
+  // Les amis (facultatifs) : des ids qui existent, pas soi-même, pas deux fois, 6 au plus.
+  systemes.forEach((s, i) => {
+    if (s?.amis === undefined) return;
+    const qui = `système n°${i + 1} (${s?.profil?.nom ?? '?'})`;
+    if (!Array.isArray(s.amis) || s.amis.length > 6) {
+      erreurs.push(`${qui} : "amis" doit être une liste de 6 ids au plus`);
+      return;
+    }
+    s.amis.forEach((a, j) => {
+      if (!ids.has(a)) erreurs.push(`${qui}, ami ${j + 1} : "${a}" n'est pas un système de la galaxie`);
+      else if (a === s.id) erreurs.push(`${qui}, ami ${j + 1} : un système ne peut pas être son propre ami`);
+      else if (s.amis.indexOf(a) !== j) erreurs.push(`${qui}, ami ${j + 1} : "${a}" est en double`);
+    });
+  });
   return erreurs;
 }
 

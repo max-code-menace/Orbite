@@ -16,7 +16,26 @@ test('la galaxie contient plusieurs systèmes (étape G1)', () => {
   assert.ok(galaxie.systemes.length >= 10, `${galaxie.systemes.length} systèmes seulement`);
 });
 
+test('les amis du vrai fichier sont valides, et Luna en a au moins 3 (étape « voyage »)', () => {
+  assert.ok((galaxie.systemes[0].amis ?? []).length >= 3);
+});
+
 const galaxieRefusee = {
+  "ami qui n'existe pas": (g) => {
+    g.systemes[0].amis = ['personne'];
+  },
+  'système ami de lui-même': (g) => {
+    g.systemes[0].amis = [g.systemes[0].id];
+  },
+  'même ami deux fois': (g) => {
+    g.systemes[0].amis = ['noe', 'noe'];
+  },
+  'plus de 6 amis': (g) => {
+    g.systemes[0].amis = g.systemes.slice(1, 8).map((s) => s.id);
+  },
+  "amis qui n'est pas une liste": (g) => {
+    g.systemes[0].amis = 'noe';
+  },
   'liste des systèmes vide': (g) => {
     g.systemes = [];
   },

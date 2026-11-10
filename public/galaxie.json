@@ -8,6 +8,7 @@
         "bio": "Photos, musique et voyages ✨",
         "photo": ""
       },
+      "amis": ["noe", "ines", "jade", "lea"],
       "planetes": [
         {
           "id": "instagram",
@@ -90,6 +91,7 @@
         "bio": "Skate, rap et bonnes vibes 🛹 (exemple)",
         "photo": ""
       },
+      "amis": ["luna", "yanis", "milo"],
       "planetes": [
         {
           "id": "instagram",
@@ -156,6 +158,7 @@
         "bio": "Dessin, carnets et café ☕ (exemple)",
         "photo": ""
       },
+      "amis": ["luna", "jade", "chloe"],
       "planetes": [
         {
           "id": "instagram",
@@ -222,6 +225,7 @@
         "bio": "Cuisine du monde 🍜 (exemple)",
         "photo": ""
       },
+      "amis": ["lea", "tom", "emma"],
       "planetes": [
         {
           "id": "instagram",
@@ -288,6 +292,7 @@
         "bio": "Danse et voyages ✈️ (exemple)",
         "photo": ""
       },
+      "amis": ["luna", "sacha", "emma"],
       "planetes": [
         {
           "id": "instagram",
@@ -354,6 +359,7 @@
         "bio": "Jeux vidéo et pixel art 🎮 (exemple)",
         "photo": ""
       },
+      "amis": ["noe", "adam", "yanis"],
       "planetes": [
         {
           "id": "instagram",
@@ -420,6 +426,7 @@
         "bio": "Photo argentique 📷 (exemple)",
         "photo": ""
       },
+      "amis": ["luna", "ines", "chloe"],
       "planetes": [
         {
           "id": "instagram",
@@ -486,6 +493,7 @@
         "bio": "Football et musique ⚽ (exemple)",
         "photo": ""
       },
+      "amis": ["noe", "milo", "tom"],
       "planetes": [
         {
           "id": "instagram",
@@ -552,6 +560,7 @@
         "bio": "Plantes et brocante 🌿 (exemple)",
         "photo": ""
       },
+      "amis": ["ines", "jade", "emma"],
       "planetes": [
         {
           "id": "instagram",
@@ -618,6 +627,7 @@
         "bio": "Randonnée et montagne 🏔️ (exemple)",
         "photo": ""
       },
+      "amis": ["sacha", "yanis", "adam"],
       "planetes": [
         {
           "id": "instagram",
@@ -684,6 +694,7 @@
         "bio": "Mode et couture 🧵 (exemple)",
         "photo": ""
       },
+      "amis": ["sacha", "lea", "chloe"],
       "planetes": [
         {
           "id": "instagram",
@@ -750,6 +761,7 @@
         "bio": "Science et étoiles 🔭 (exemple)",
         "photo": ""
       },
+      "amis": ["milo", "tom", "luna"],
       "planetes": [
         {
           "id": "instagram",
