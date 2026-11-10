@@ -4,7 +4,7 @@ import { creerCreature } from './creatures.js';
 import { creerDecor, decorsLibres, tirerAutreType, typesLibres } from './decors.js';
 
 // Les couleurs de chaque planète (le style reste dans le code,
-// le nom et les liens sont dans systeme.json).
+// le nom et les liens sont dans galaxie.json).
 export const themes = {
   instagram: { herbe: '#ff8fb1', terre: '#ff9a5a', anneau: '#ff5fb8' },
   youtube: { herbe: '#ff6f61', terre: '#c4453f', anneau: '#ff9a3c' },

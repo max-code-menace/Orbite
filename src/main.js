@@ -96,9 +96,11 @@ scene.add(sun.group);
 let systeme = null;
 let acces = null;
 const conteneurEtiquettes = document.getElementById('etiquettes');
-fetch('./systeme.json')
+fetch('./galaxie.json')
   .then((r) => r.json())
-  .then((donnees) => {
+  .then((galaxie) => {
+    // Pour l'instant (étape G1), on affiche le premier système de la galaxie.
+    const donnees = galaxie.systemes[0];
     remplirProfil(document.getElementById('profil'), donnees.profil);
     acces = creerAccesRapide(document.getElementById('acces'), donnees.planetes, resize);
     systeme = creerPlanetes(donnees, conteneurEtiquettes, choisir);
@@ -106,7 +108,7 @@ fetch('./systeme.json')
     resize();
     exposerEtatPourTests();
   })
-  .catch((err) => console.error('Impossible de lire systeme.json', err));
+  .catch((err) => console.error('Impossible de lire galaxie.json', err));
 
 // --- État lisible par le test automatique (scripts/test-mobile.mjs) ----------
 // Lecture seule : ça ne change rien à la page, ça permet juste au test de

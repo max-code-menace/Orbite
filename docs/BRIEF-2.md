@@ -1,10 +1,10 @@
-# Orbite — brief n°2 : de la page à l'application (BROUILLON, à valider)
+# Orbite — brief n°2 : de la page à l'application (validé le 10/11/2026)
 
 Suite du prototype 1 (`docs/BRIEF.md` : un seul système, ses 5 planètes, ses liens). Décidé le 10/11/2026 :
 on avance vers l'application. **Ordre : la galaxie d'abord, la messagerie ensuite.** Les îles actuelles seront
 refaites dans Blender : on n'investit plus dans leur aspect (décors, créatures).
 
-## Ce qu'on suppose (à confirmer par la personne)
+## Ce qu'on suppose (validé par la personne)
 
 - **Une personne = un système solaire** : son soleil (elle) et ses planètes (ses liens, comme aujourd'hui).
 - **La galaxie = la carte de tous les systèmes.** Chaque système y est un petit soleil lumineux avec un nom.
@@ -43,6 +43,6 @@ notifications · faire tourner la galaxie ou le système au doigt (à rediscuter
 ## Ce que ça change dans les règles du projet
 
 - Aujourd'hui, une règle vérifiée par `npm test` impose « données dans `public/systeme.json` seulement ».
-  Avec plusieurs systèmes, il faudra l'adapter (un dossier de systèmes, mêmes contrôles : liens https seulement).
+  Fait à G1 : un seul fichier `public/galaxie.json` (la liste des systèmes), mêmes contrôles sur chaque système.
   C'est une zone sensible : l'agent `securite` relira.
 - L'étape 8 du prototype 1 (fluidité + checklist) est absorbée : la fluidité sera mesurée sur la galaxie.

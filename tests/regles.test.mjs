@@ -13,7 +13,7 @@ test('pas de flou backdrop-filter (faisait tomber la tablette à 24 img/s)', () 
     assert.ok(!/backdrop-filter\s*:|backdropFilter/.test(texte), `${f} utilise backdrop-filter`);
 });
 
-test('pas de lien écrit en dur dans le code (les liens vivent dans systeme.json)', () => {
+test('pas de lien écrit en dur dans le code (les liens vivent dans galaxie.json)', () => {
   for (const { f, texte } of code) {
     const liens = (texte.match(/https?:\/\/[^\s'"`)]+/g) ?? []).filter((l) => !l.startsWith('http://www.w3.org/'));
     assert.deepEqual(liens, [], `${f} contient un lien en dur`);

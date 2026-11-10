@@ -1,6 +1,6 @@
 # Orbite — état du projet
 
-Dernière mise à jour : 10 novembre 2026, session 4 (étape 7 : les créatures).
+Dernière mise à jour : 10 novembre 2026, session 4 (étape 7 fusionnée ; virage vers l'application, étape G1).
 
 ## Le plan en 8 étapes
 
@@ -17,14 +17,21 @@ Dernière mise à jour : 10 novembre 2026, session 4 (étape 7 : les créatures)
 
 ## Où on s'est arrêté (session 4)
 
-- PR n°4 vérifiée fusionnée. La vieille branche `ccr-91f948f1-jy4tx5` garde 2 commits, mais leur contenu est déjà
-  dans la branche principale (recopiés en session 3) : rien de perdu.
-- Mesure iPhone 15 de l'étape 6 reçue : 60 img/s (son maximum) en changeant de décor à répétition.
-- **Étape 7 faite (option A choisie)**, sur la branche de session, pull request à fusionner par la personne.
-  **À mesurer sur appareil** (`?fps&v=13`) : fluidité, et si les créatures se voient assez.
-- À cette pull request : la personne l'ouvre dans la minute pour constater que « Merge » est bloqué tant que
-  `verifier` tourne (jamais vu jusqu'ici). Auditeur du harnais : vers le 10 décembre 2026.
-- **Prochaine étape : 8** (derniers réglages de fluidité + checklist du brief).
+- Étape 7 (créatures) fusionnée (PR n°5) et en ligne. La personne ne les voit pas sur son iPhone (compteur à
+  « qualité 5/5 », donc pas retirées par le mode allégé) : trop petites, ou pas affichées par Safari — **non
+  tranché, abandonné à sa demande** : les îles seront refaites dans Blender, on n'investit plus dans leur aspect.
+- **Virage décidé par la personne : avancer vers l'application.** Nouveau plan : `docs/BRIEF-2.md` (validé).
+  Ordre : la galaxie d'abord (G1 à G5, sans serveur), puis comptes + messagerie (Supabase, à détailler).
+  L'étape 8 du prototype 1 est absorbée par ce plan.
+- **G1 faite** (sur la branche de session, PR à fusionner) : `public/systeme.json` remplacé par
+  `public/galaxie.json` = liste de 12 systèmes (Luna + 11 personnes **inventées**, bio marquée « (exemple) », liens vers les pages d'accueil seulement — jamais de vrai profil d'un tiers sans son accord). Chaque
+  système a un `id` (minuscules, chiffres, tirets : servira dans l'adresse, étape G5). Mêmes contrôles qu'avant,
+  appliqués à chaque système. La page affiche toujours le premier système (Luna) : rien ne change à l'écran.
+- À surveiller : une fois sur 3 passages du test (10/11, pendant qu'un autre test tournait en même temps), la
+  capture « planète ouverte » du téléphone était vide (fond violet, aucune 3D). Non reproduit ensuite, ni sur la
+  branche principale : cause inconnue. Le test ne vérifie pas que la 3D est dessinée derrière le panneau.
+- **Prochaine étape : G2** (l'écran galaxie). Question en suspens pour la phase 2 : la messagerie, entre qui ?
+- Auditeur du harnais : vers le 10 décembre 2026.
 
 ## Mesures faites sur les vrais appareils
 
@@ -40,7 +47,7 @@ Dernière mise à jour : 10 novembre 2026, session 4 (étape 7 : les créatures)
 
 | Fichier | Rôle |
 |---|---|
-| `public/systeme.json` | Les données : profil + 5 planètes (id, nom, description, liens). Modifiable à la main. |
+| `public/galaxie.json` | Les données : la liste des systèmes ; chacun = id + profil + 5 planètes (id, nom, description, liens). Modifiable à la main. |
 | `src/main.js` | Moteur 3D, caméra (repos / rapprochement), cadrage, toucher, fluidité (budget de pixels, paliers du mode allégé). |
 | `src/sky.js` | Étoiles (un seul objet, scintillement dans le shader) et astéroïdes (`InstancedMesh`). |
 | `src/sun.js` | Soleil à facettes, halos, lumière chaude. |
@@ -50,7 +57,7 @@ Dernière mise à jour : 10 novembre 2026, session 4 (étape 7 : les créatures)
 | `src/ui.js` | Profil, Accès rapide (feuille glissable ; colonne fixe sur tablette à l'horizontale), panneau d'une planète. |
 | `src/icons.js` | Icônes maison (pas de vrais logos). |
 | `src/style.css` | Styles. Pas de `backdrop-filter`. |
-| `scripts/verifier-donnees.mjs`, `scripts/donnees.mjs` | Vérifient `systeme.json` (JSON valide, 5 planètes, liens et photo en https uniquement). |
+| `scripts/verifier-donnees.mjs`, `scripts/donnees.mjs` | Vérifient `galaxie.json` (JSON valide, ids de systèmes uniques et utilisables dans une adresse, 5 planètes par système, liens et photo en https uniquement). |
 | `src/fluidite.js` | Budget de pixels, paliers du mode allégé (sortis de `main.js` pour être testés sans navigateur). |
 | `scripts/check.mjs`, `scripts/niveaux.mjs` | `npm run check` : choisit le niveau de vérification d'après les fichiers modifiés. |
 | `tests/` | Tests rapides (< 1 s) : données, règles du projet, logique, niveaux, harnais. |

@@ -1,4 +1,4 @@
-// Règles du fichier de données public/systeme.json.
+// Règles du fichier de données public/galaxie.json (la liste des systèmes).
 // Renvoie la liste des problèmes trouvés (vide = tout va bien), en français.
 // Utilisé par verifier-donnees.mjs et par les tests rapides (tests/).
 
@@ -6,6 +6,28 @@ const texte = (v) => typeof v === 'string' && v.trim().length > 0;
 // Lien sûr : https uniquement (pas de http, ni javascript:, ni espace).
 const lienSur = (v) => typeof v === 'string' && /^https:\/\/[^\s]+$/.test(v);
 
+// Identifiant d'un système : il servira dans l'adresse de la page (ex. …/#luna),
+// donc minuscules, chiffres et tirets seulement.
+const idSur = (v) => typeof v === 'string' && v.length <= 30 && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(v);
+
+// La galaxie : une liste de systèmes, chacun avec un id unique et valide.
+export function verifierGalaxie(galaxie) {
+  if (!galaxie || typeof galaxie !== 'object') return ['le fichier ne contient pas un objet { ... }'];
+  const systemes = galaxie.systemes;
+  if (!Array.isArray(systemes) || systemes.length === 0) return ['la liste "systemes" manque ou est vide'];
+  const erreurs = [];
+  const ids = new Set();
+  systemes.forEach((s, i) => {
+    const qui = `système n°${i + 1} (${s?.profil?.nom ?? '?'})`;
+    if (!idSur(s?.id)) erreurs.push(`${qui} : "id" doit être en minuscules, chiffres et tirets (reçu : "${s?.id}")`);
+    else if (ids.has(s.id)) erreurs.push(`${qui} : l'id "${s.id}" est en double`);
+    else ids.add(s.id);
+    for (const e of verifierDonnees(s)) erreurs.push(`${qui} : ${e}`);
+  });
+  return erreurs;
+}
+
+// Un système : un profil et ses 5 planètes.
 export function verifierDonnees(donnees) {
   const erreurs = [];
   if (!donnees || typeof donnees !== 'object') return ['le fichier ne contient pas un objet { ... }'];
