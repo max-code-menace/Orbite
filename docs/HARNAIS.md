@@ -9,7 +9,7 @@ Principe : les machines font les vérifications mécaniques (rapides, fiables), 
 | 0 | Textes / docs seulement | Format + linter, construction | 1,1 s | < 10 s |
 | 1 | Code | + tests rapides (données, règles, logique, harnais) | 1,2 s | < 1 min |
 | 2 | Zone sensible | + secrets + audit des dépendances, puis agent `securite` | 2,3 s (+ agent) | — |
-| 3 | CI GitHub, avant fusion | Tout + test complet téléphone + tablette | 32 s ici ; 77 s sur GitHub | — |
+| 3 | CI GitHub, avant fusion | Tout + test complet téléphone + tablette | 48,5 s ici (étape 7) ; sur GitHub : 77 s avant l'étape 7, pas encore mesuré depuis | — |
 
 Zones sensibles : voir `scripts/niveaux.mjs` (et sa copie lisible dans `CLAUDE.md`).
 
@@ -21,7 +21,7 @@ Zones sensibles : voir `scripts/niveaux.mjs` (et sa copie lisible dans `CLAUDE.m
 | Tests rapides `tests/` (`node --test`) | 0,2 s | Données cassées ou piégées (`http://`, `javascript:`), retour du flou qui faisait tomber la tablette à 24 img/s, lien en dur, `innerHTML` avec les données, garde-fous de fluidité débranchés, décor qui ne change pas, harnais débranché. |
 | Détection de secrets (Secretlint) | 0,4-0,6 s | Clé ou jeton publié dans un dépôt **public**. |
 | Audit des dépendances (`npm audit`) | 0,4 s | Faille connue dans un outil utilisé. |
-| Test complet téléphone + tablette (existait déjà) | ~30 s | La page ne s'affiche pas, un toucher ne marche plus. Seul test qui voit la vraie page. |
+| Test complet téléphone + tablette (existait déjà) | ~30 s ; ~46 s depuis l'étape 7 (créatures : ~13 s, sur le téléphone seulement) | La page ne s'affiche pas, un toucher ne marche plus. Seul test qui voit la vraie page. |
 | Hook « après modification » | 0,1 s | Fichier mal mis en forme qui fait échouer la CI plus tard. |
 | Hook « fin de tâche » | 1-3 s ; 0,06 s si rien n'a changé | Tâche annoncée finie alors qu'une vérification échoue. |
 | Hook git « avant commit » | 0,4 s | Secret enregistré dans l'historique (difficile à effacer ensuite). |

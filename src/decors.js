@@ -7,19 +7,19 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 // maisons…) sont fusionnées en UN SEUL objet 3D, chaque pièce gardant sa couleur.
 // Seules les pièces qui bougent (barres d'égaliseur, avion) restent à part.
 
-const SOL = 0.15; // la hauteur du dessus de l'île
+export const SOL = 0.15; // la hauteur du dessus de l'île
 const tmpQ = new THREE.Quaternion();
 const tmpE = new THREE.Euler();
 
 // Une position, une rotation et une taille réunies en une « matrice ».
-function m(pos = [0, 0, 0], rot = [0, 0, 0], taille = 1) {
+export function m(pos = [0, 0, 0], rot = [0, 0, 0], taille = 1) {
   const s = Array.isArray(taille) ? taille : [taille, taille, taille];
   tmpQ.setFromEuler(tmpE.set(rot[0], rot[1], rot[2]));
   return new THREE.Matrix4().compose(new THREE.Vector3(...pos), tmpQ.clone(), new THREE.Vector3(...s));
 }
 
 // Rassemble des pièces de couleur, puis les fusionne en un seul objet.
-class Assemblage {
+export class Assemblage {
   constructor() {
     this.pieces = [];
   }

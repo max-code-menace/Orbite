@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createStars, createAsteroids } from './sky.js';
 import { createSun } from './sun.js';
-import { PALIERS, calculerRatio, palierApres } from './fluidite.js';
+import { PALIERS, calculerRatio, creaturesVisibles, palierApres } from './fluidite.js';
 import { creerPlanetes } from './planets.js';
 import { remplirProfil, creerAccesRapide, creerPanneau, ecranLarge } from './ui.js';
 
@@ -126,6 +126,9 @@ function exposerEtatPourTests() {
           echelleIle: p.ile.scale.x,
           sommetsDecor: sommets,
           signature: p.decor.signature ? p.decor.signature() : null,
+          creatureVisible: p.creature.objet.visible,
+          creatureSommets: p.creature.objet.children[0].geometry.attributes.position.count,
+          creatureSignature: p.creature.signature(),
         };
       }),
   };
@@ -200,7 +203,7 @@ function frame() {
     const now = performance.now();
     if (now - fpsLast >= 500) {
       const ips = Math.round((fpsFrames * 1000) / (now - fpsLast));
-      fpsBox.textContent = `${ips} img/s · finesse ${PALIERS.length - palier}/${PALIERS.length}`;
+      fpsBox.textContent = `${ips} img/s · qualité ${PALIERS.length - palier}/${PALIERS.length}`;
       fpsFrames = 0;
       fpsLast = now;
     }
@@ -325,6 +328,7 @@ function resize() {
   repos.offY = h / 2 - (haut + zone / 2);
 
   Object.assign(cadre, { haut, centreX: largeur / 2, w, h });
+  systeme?.montrerCreatures(creaturesVisibles(palier));
   pixelRatio = calculerPixelRatio();
   renderer.setPixelRatio(pixelRatio);
   stars.material.uniforms.uPixelRatio.value = pixelRatio;

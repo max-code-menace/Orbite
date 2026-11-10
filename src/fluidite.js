@@ -5,9 +5,16 @@
 // (surtout une tablette, avec son grand écran) rame et chauffe.
 export const BUDGET_PIXELS = 2.2e6;
 
-// Mode allégé automatique : si l'appareil n'arrive pas à suivre, on dessine
-// moins finement, palier par palier (1 = finesse normale).
-export const PALIERS = [1, 0.8, 0.65, 0.5];
+// Mode allégé automatique : si l'appareil n'arrive pas à suivre, on allège,
+// palier par palier. Chaque nombre est la finesse du dessin (1 = normale).
+// Le premier cran retire seulement les créatures (facultatives) : la finesse
+// ne baisse qu'ensuite.
+export const PALIERS = [1, 1, 0.8, 0.65, 0.5];
+
+// Les créatures ne sont montrées qu'au palier normal (le tout premier).
+export function creaturesVisibles(palier) {
+  return palier === 0;
+}
 
 // En dessous de ce nombre d'images par seconde, on passe au palier suivant.
 export const SEUIL_IPS = 50;

@@ -27,7 +27,7 @@ lien à ouvrir (`?fps&v=N`, N augmenté à chaque fois), quoi regarder, quoi mes
 | Commande | Quand |
 |---|---|
 | `npm run check` | Choisit le niveau seul (0 docs, 1 code, 2 zone sensible). Lancé aussi par le hook de fin de tâche. |
-| `npm run verifier` | Test complet téléphone + tablette (~30 s). **Avant chaque commit.** |
+| `npm run verifier` | Test complet téléphone + tablette (~45 s). **Avant chaque commit.** |
 | `npm run check -- --ci` | Niveau 3 : tout. C'est ce que lance GitHub ; rien n'est mis en ligne s'il échoue. |
 | `npm test` / `npm run lint` / `npm run format` | Tests rapides (< 1 s) / linter / mise en forme. |
 

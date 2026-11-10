@@ -144,8 +144,68 @@ for (const { nom, options } of appareils) {
   await page.locator('.panneau-fermer').click();
   await page.waitForTimeout(800);
 
+  // --- Étape 7 : les créatures (sur le téléphone seulement : ~13 s de test,
+  // et leur comportement ne dépend pas de la taille de l'écran) ---
+  if (nom === 'telephone') await verifierCreatures(page);
+
   verifier(erreurs.length === 0, `aucune erreur dans la page${erreurs.length ? ` : ${erreurs.join(' | ')}` : ''}`);
   await page.close();
+}
+
+async function verifierCreatures(page) {
+  // ?qualite=1 : qualité normale imposée (sinon le mode allégé, vu la lenteur de
+  // la 3D simulée, pourrait les retirer pendant le test).
+  await page.goto(`${url}?qualite=1`);
+  await page.waitForTimeout(1500);
+  const creatures = await page.evaluate(() => window.orbite.planetes());
+  verifier(
+    creatures.filter((p) => p.creatureVisible && p.creatureSommets > 100).length === 5,
+    'les 5 créatures sont là',
+  );
+  // Pendant 5 s, on note toutes les poses de chaque créature : plusieurs = elle a bougé.
+  const poses = async (duree) =>
+    page.evaluate(
+      (d) =>
+        new Promise((fini) => {
+          const vues = {};
+          const fin = performance.now() + d;
+          (function noter() {
+            for (const p of window.orbite.planetes()) {
+              if (!vues[p.id]) vues[p.id] = new Set();
+              vues[p.id].add(p.creatureSignature);
+            }
+            if (performance.now() < fin) requestAnimationFrame(noter);
+            else fini(Object.fromEntries(Object.entries(vues).map(([id, v]) => [id, v.size])));
+          })();
+        }),
+      duree,
+    );
+  const bouge = await poses(5000);
+  verifier(
+    Object.values(bouge).filter((n) => n > 1).length === 5,
+    `les 5 créatures bougent (${JSON.stringify(bouge)})`,
+  );
+  await page.screenshot({ path: `${DOSSIER}/telephone-5-creatures.png` });
+  // Gros plan sur Spotify (créature au casque audio) pour la regarder à l'œil.
+  await page.locator('.etiquette', { hasText: 'Spotify' }).click({ force: true });
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: `${DOSSIER}/telephone-6-creature-de-pres.png` });
+  await page.locator('.panneau-fermer').click();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.waitForTimeout(300);
+  const immobiles = await poses(3000);
+  verifier(
+    Object.values(immobiles).every((n) => n === 1),
+    `« réduire les animations » : elles ne bougent plus (${JSON.stringify(immobiles)})`,
+  );
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto(`${url}?qualite=2`);
+  await page.waitForTimeout(1500);
+  const allege = await page.evaluate(() => window.orbite.planetes());
+  verifier(
+    allege.every((p) => !p.creatureVisible),
+    'mode allégé (1er cran) : les créatures sont retirées',
+  );
 }
 
 await navigateur.close();

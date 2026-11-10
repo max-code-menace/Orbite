@@ -1,6 +1,6 @@
 # Orbite — état du projet
 
-Dernière mise à jour : 10 novembre 2026, fin de session 3 (harnais de vérification ; aucune étape du produit avancée).
+Dernière mise à jour : 10 novembre 2026, session 4 (étape 7 : les créatures).
 
 ## Le plan en 8 étapes
 
@@ -11,29 +11,20 @@ Dernière mise à jour : 10 novembre 2026, fin de session 3 (harnais de vérific
 | 3 | Profil en haut, Accès rapide en bas (glissable), système cadré entre les deux | ✅ fait, validé sur appareil |
 | 4 | Toucher une planète : caméra qui s'approche + panneau de liens | ✅ fait, validé sur appareil |
 | 5 | Décors des îles | ✅ fait, testé en simulation ; **pas encore mesuré sur appareil** (fluidité, animations, 3 décors libres jamais vus sur appareil) |
-| 6 | Bouton « Changer de décor » sur la planète libre, avec animation | ✅ fait, testé en simulation ; **pas encore mesuré sur appareil** |
-| 7 | Petites créatures décoratives (facultatives, à retirer en premier si ça rame) | ⏳ à faire |
+| 6 | Bouton « Changer de décor » sur la planète libre, avec animation | ✅ fait ; mesuré : iPhone 15 à 60 img/s, tablette à 83-90 img/s |
+| 7 | Petites créatures décoratives (facultatives, à retirer en premier si ça rame) | ✅ fait, testé en simulation ; **pas encore vu ni mesuré sur appareil** |
 | 8 | Derniers réglages de fluidité + checklist des critères de réussite du brief | ⏳ à faire |
 
-## Où on s'est arrêté (session 3)
+## Où on s'est arrêté (session 4)
 
-- Pull request n°1 (étape 6) : fusionnée. Les 2 commits arrivés après la fusion (règle du récap, état) étaient
-  restés sur l'ancienne branche : récupérés en session 3.
-- Session 3 : mise en place du harnais (voir `docs/HARNAIS.md`), fusionné (PR n°2). La personne a protégé la
-  branche principale (règle « Protection branche principale » : pull request obligatoire, vérification `verifier`
-  obligatoire, pas de push forcé ni de suppression, 0 approbation requise) et activé la protection GitHub contre
-  les secrets. Le blocage réel du bouton « Merge » sera constaté à la prochaine pull request.
-- Mesure étape 6 reçue pour la tablette (voir plus bas). **En attente : la mesure de l'iPhone 15** (`?fps&v=12`,
-  img/s en touchant « Changer de décor » plusieurs fois).
-- **Prochaine étape : 7 (créatures).** Plan déjà présenté en fin de session 3, **choix pas encore fait** :
-  - A (recommandée) : une même petite bestiole ronde, couleur de sa planète, avec un accessoire différent par
-    planète (appareil photo, casque audio, bonnet, petite valise…) — plus légère, plus rapide, style cohérent ;
-  - B : un animal différent par planète — plus de personnalité, ~2x plus de travail, un peu plus lourd.
-  Dans les deux cas : une par île, petit saut ou tête qui tourne toutes les quelques secondes (rythmes
-  décalés) ; retirées **en premier** par le mode allégé (avant la baisse de finesse) ; immobiles avec « réduire
-  les animations » ; vérification ajoutée au test (5 présentes, bougent, disparaissent en mode allégé).
-- À la prochaine pull request : dire à la personne de l'ouvrir dans la minute pour constater que « Merge » est
-  bloqué tant que `verifier` tourne (jamais vu jusqu'ici). Auditeur du harnais : vers le 10 décembre 2026.
+- PR n°4 vérifiée fusionnée. La vieille branche `ccr-91f948f1-jy4tx5` garde 2 commits, mais leur contenu est déjà
+  dans la branche principale (recopiés en session 3) : rien de perdu.
+- Mesure iPhone 15 de l'étape 6 reçue : 60 img/s (son maximum) en changeant de décor à répétition.
+- **Étape 7 faite (option A choisie)**, sur la branche de session, pull request à fusionner par la personne.
+  **À mesurer sur appareil** (`?fps&v=13`) : fluidité, et si les créatures se voient assez.
+- À cette pull request : la personne l'ouvre dans la minute pour constater que « Merge » est bloqué tant que
+  `verifier` tourne (jamais vu jusqu'ici). Auditeur du harnais : vers le 10 décembre 2026.
+- **Prochaine étape : 8** (derniers réglages de fluidité + checklist du brief).
 
 ## Mesures faites sur les vrais appareils
 
@@ -42,6 +33,7 @@ Dernière mise à jour : 10 novembre 2026, fin de session 3 (harnais de vérific
   remontée à **80-89 img/s** après avoir retiré le flou `backdrop-filter`, plafonné la résolution et rendu le
   canvas opaque. Le mode allégé automatique n'a donc pas eu à agir sur elle.
   Étapes 5-6 (10/11/2026, `v=12`) : **90 img/s constant** ; **83 img/s** en touchant « Changer de décor » à répétition.
+- **iPhone 15**, étapes 5-6 (`v=12`) : **60 img/s** en touchant « Changer de décor » plusieurs fois.
 - Rien n'a encore été mesuré sur un vrai « vieux » téléphone.
 
 ## Comment c'est construit (fichiers)
@@ -54,6 +46,7 @@ Dernière mise à jour : 10 novembre 2026, fin de session 3 (harnais de vérific
 | `src/sun.js` | Soleil à facettes, halos, lumière chaude. |
 | `src/planets.js` | Îles flottantes, anneaux, orbites, étiquettes HTML, zones de toucher invisibles, couleurs par planète. |
 | `src/decors.js` | Décors des îles. `Assemblage` fusionne les pièces fixes d'une île en un seul objet. Décors de la planète libre : `decorsLibres` (foret, cristaux, champignons, glace, volcan). |
+| `src/creatures.js` | Étape 7 : la petite bestiole de chaque île (corps rond, yeux, accessoire), fusionnée en un seul objet ; son saut / tour de tête (`pose`). |
 | `src/ui.js` | Profil, Accès rapide (feuille glissable ; colonne fixe sur tablette à l'horizontale), panneau d'une planète. |
 | `src/icons.js` | Icônes maison (pas de vrais logos). |
 | `src/style.css` | Styles. Pas de `backdrop-filter`. |
@@ -73,8 +66,15 @@ Dernière mise à jour : 10 novembre 2026, fin de session 3 (harnais de vérific
 - **Plan des orbites incliné vers la caméra** (`INCLINAISON` dans `planets.js`) : les orbites restent rondes à
   l'écran tandis que les îles, droites, montrent leur rocher.
 - **Pas de flou d'arrière-plan** : c'était la cause du passage de la tablette à 24 img/s.
-- **Mode allégé automatique** : sous 50 img/s pendant 2 s, la finesse baisse d'un palier (4 paliers).
-  `?fps` affiche le compteur et la finesse ; `?qualite=1..4` force un palier pour tester.
+- **Mode allégé automatique** : sous 50 img/s pendant 2 s, on passe au palier suivant (5 paliers depuis l'étape 7).
+  Le 1er cran retire seulement les créatures ; les 3 suivants baissent la finesse du dessin.
+  `?fps` affiche le compteur et « qualité N/5 » (avant l'étape 7 : « finesse N/4 ») ; `?qualite=1..5` force un
+  palier pour tester (`?qualite=2` = sans créatures).
+- **Créatures (étape 7, option A)** : la même bestiole ronde sur chaque île, couleur de sa planète éclaircie à 60 % vers le blanc
+  (sinon elle se confond avec l'herbe, surtout sur Spotify), agrandie 1,7x pour être visible. Accessoires : appareil photo (Instagram),
+  casquette (YouTube), casque audio (Spotify), valise (Voyage), bonnet (planète libre ; sa couleur suit le décor).
+  Toutes les 3,2 à 4,2 s, un saut puis, la fois suivante, un tour de tête ; immobiles avec « réduire les animations ».
+  5 objets 3D de plus à dessiner au total. Vues de loin (écran d'accueil), elles sont toutes petites.
 - **Formes construites dans le code** pour ce prototype. Le rendu « vraies îles » des maquettes demandera des
   modèles faits dans Blender (format `.glb`, ~1-2 Mo max par île), chargés à la place de `creerIle` + `creerDecor`.
   Décidé avec la personne : on valide d'abord le prototype.
@@ -98,9 +98,8 @@ Dernière mise à jour : 10 novembre 2026, fin de session 3 (harnais de vérific
 - Poids de la page : ~616 Ko de JavaScript (~157 Ko compressés), surtout Three.js. À surveiller pour le critère
   « s'ouvre en moins de 3 s en 4G » (étape 8).
 
-- Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=11`).
+- Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=13`).
 - Le compte GitHub Pages est activé avec la source « GitHub Actions ». La branche principale du dépôt est
   `ccr-be406ff5-wxbiv4` : c'est elle qui est mise en ligne.
-- Étape 7 : si les créatures font baisser la fluidité, elles doivent être les premières désactivées par le mode allégé.
 - Étape 8 : le brief demande aussi « moins d'étoiles, pas de lueurs » dans le mode allégé ; aujourd'hui seuls les
   paliers de résolution existent.

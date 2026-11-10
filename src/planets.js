@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { icons } from './icons.js';
+import { creerCreature } from './creatures.js';
 import { creerDecor, decorsLibres, tirerAutreType, typesLibres } from './decors.js';
 
 // Les couleurs de chaque planète (le style reste dans le code,
@@ -157,6 +158,9 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
     const decor = creerDecor(p.id, typeLibre);
     ile.add(decor.surIle);
     if (decor.autour) pivot.add(decor.autour);
+    // La petite créature, posée sur l'île (elle tourne et « poppe » avec elle).
+    const creature = creerCreature(p.id, theme.anneau, i);
+    ile.add(creature.objet);
     const anneau = creerAnneau(theme.anneau, 1.25);
     pivot.add(anneau);
 
@@ -189,6 +193,7 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
       zone,
       theme,
       decor,
+      creature,
       typeLibre,
       anneau,
       icone,
@@ -201,6 +206,13 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
   });
 
   const point = new THREE.Vector3();
+  let creaturesMontrees = true;
+
+  // Montre ou cache les créatures (le mode allégé les retire en premier).
+  function montrerCreatures(oui) {
+    creaturesMontrees = oui;
+    for (const p of planetes) p.creature.objet.visible = oui;
+  }
 
   function update(elapsed, motion, camera, largeur, hauteur) {
     for (const p of planetes) {
@@ -209,6 +221,8 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
       if (p.pop) animerPop(p);
       p.ile.rotation.y = elapsed * 0.25 + p.phase + p.tour;
       p.decor.update?.(elapsed);
+      // Immobiles si « réduire les animations » (motion < 1) ; rien à calculer si cachées.
+      if (creaturesMontrees) p.creature.update(elapsed, motion < 1);
 
       // L'étiquette suit la planète, juste au-dessus d'elle.
       point.set(0, 1.0, 0);
@@ -243,7 +257,7 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
     return p.theme;
   }
 
-  return { groupe, planetes, update, planeteSous, changerDecor };
+  return { groupe, planetes, update, planeteSous, changerDecor, montrerCreatures };
 }
 
 // Met sur l'île les couleurs et le décor de son type actuel.
@@ -252,6 +266,7 @@ function habiller(p) {
   p.ile.userData.matieres.terre.color.set(p.theme.terre);
   for (const mat of p.anneau.userData.matieres) mat.color.set(p.theme.anneau);
   p.icone.style.color = p.theme.anneau;
+  p.creature.recolorer(p.theme.anneau);
 
   // L'ancien décor est retiré et sa forme effacée de la mémoire.
   // (Sa matière est partagée par tous les décors : on la garde.)
