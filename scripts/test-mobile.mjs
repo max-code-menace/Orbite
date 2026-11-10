@@ -75,10 +75,56 @@ for (const { nom, options } of appareils) {
   const hauteur = page.viewportSize().height;
   verifier(panneau && panneau.height <= hauteur * 0.6 + 1, "le panneau ne couvre pas plus d'environ la moitié de l'écran");
 
+  verifier(await page.locator('.panneau-changer').isHidden(), "pas de bouton « Changer de décor » sur Spotify");
+
   // La croix referme le panneau.
   await page.locator('.panneau-fermer').click();
   await page.waitForTimeout(800);
   verifier((await page.locator('#panneau.visible').count()) === 0, 'la croix referme le panneau');
+
+  // --- Étape 6 : « Changer de décor » sur la planète libre ---
+  const etatLibre = async () => (await page.evaluate(() => window.orbite.planetes())).find((p) => p.id === 'libre');
+  await page.locator('.etiquette', { hasText: 'Planète libre' }).click({ force: true });
+  await page.waitForTimeout(1200);
+  const bouton = page.locator('.panneau-changer');
+  verifier(await bouton.isVisible(), 'le panneau de la planète libre a le bouton « Changer de décor »');
+  const bb = await bouton.boundingBox();
+  verifier(bb && bb.height >= 44, `le bouton est assez grand pour le pouce (${bb ? Math.round(bb.height) : '?'} px de haut)`);
+  const panneauLibre = await page.locator('#panneau').boundingBox();
+  verifier(panneauLibre && panneauLibre.height <= hauteur * 0.6 + 1, "avec le bouton, le panneau ne couvre toujours pas plus d'environ la moitié de l'écran");
+  await page.screenshot({ path: `${DOSSIER}/${nom}-3-planete-libre.png` });
+
+  const l0 = await etatLibre();
+  // Pendant ~1 s, on note la plus petite taille de l'île : preuve que l'animation a eu lieu.
+  await page.evaluate(() => {
+    window.__tailleMin = 1;
+    const fin = performance.now() + 1000;
+    (function suivre() {
+      const l = window.orbite.planetes().find((p) => p.id === 'libre');
+      window.__tailleMin = Math.min(window.__tailleMin, l.echelleIle);
+      if (performance.now() < fin) requestAnimationFrame(suivre);
+    })();
+  });
+  await bouton.click();
+  await page.waitForTimeout(1100);
+  const l1 = await etatLibre();
+  const tailleMin = await page.evaluate(() => window.__tailleMin);
+  verifier(l1.typeLibre !== l0.typeLibre, `toucher le bouton change le décor (${l0.typeLibre} → ${l1.typeLibre})`);
+  verifier(l1.couleurAnneau !== l0.couleurAnneau, `les couleurs changent aussi (anneau ${l0.couleurAnneau} → ${l1.couleurAnneau})`);
+  verifier(l1.sommetsDecor > 50, `le nouveau décor est bien posé sur l'île (${l1.sommetsDecor} sommets)`);
+  verifier(tailleMin < 0.6, `l'île fait sa petite animation (taille la plus petite : ${tailleMin.toFixed(2)})`);
+  verifier(Math.abs(l1.echelleIle - 1) < 0.001, "l'île retrouve sa taille normale après l'animation");
+  const accent = await page.locator('#panneau').evaluate((e) => e.style.getPropertyValue('--accent'));
+  verifier(accent === l1.couleurAnneau, 'le panneau prend la nouvelle couleur');
+  verifier((await page.locator('#panneau.visible').count()) === 1, 'le panneau reste ouvert après le changement');
+  await page.screenshot({ path: `${DOSSIER}/${nom}-4-decor-change.png` });
+
+  await bouton.click();
+  await page.waitForTimeout(1100);
+  const l2 = await etatLibre();
+  verifier(l2.typeLibre !== l1.typeLibre, `un deuxième toucher change encore (${l1.typeLibre} → ${l2.typeLibre})`);
+  await page.locator('.panneau-fermer').click();
+  await page.waitForTimeout(800);
 
   verifier(erreurs.length === 0, `aucune erreur dans la page${erreurs.length ? ' : ' + erreurs.join(' | ') : ''}`);
   await page.close();

@@ -1,6 +1,6 @@
 # Orbite — état du projet
 
-Dernière mise à jour : 10 novembre 2026, après l'étape 5 et la mise en place des garde-fous.
+Dernière mise à jour : 10 novembre 2026, après l'étape 6.
 
 ## Le plan en 8 étapes
 
@@ -11,7 +11,7 @@ Dernière mise à jour : 10 novembre 2026, après l'étape 5 et la mise en place
 | 3 | Profil en haut, Accès rapide en bas (glissable), système cadré entre les deux | ✅ fait, validé sur appareil |
 | 4 | Toucher une planète : caméra qui s'approche + panneau de liens | ✅ fait, validé sur appareil |
 | 5 | Décors des îles | ✅ fait, testé en simulation ; **pas encore mesuré sur appareil** (fluidité, animations, 3 décors libres jamais vus sur appareil) |
-| 6 | Bouton « Changer de décor » sur la planète libre, avec animation | ⏳ à faire |
+| 6 | Bouton « Changer de décor » sur la planète libre, avec animation | ✅ fait, testé en simulation ; **pas encore mesuré sur appareil** |
 | 7 | Petites créatures décoratives (facultatives, à retirer en premier si ça rame) | ⏳ à faire |
 | 8 | Derniers réglages de fluidité + checklist des critères de réussite du brief | ⏳ à faire |
 
@@ -37,7 +37,7 @@ Dernière mise à jour : 10 novembre 2026, après l'étape 5 et la mise en place
 | `src/icons.js` | Icônes maison (pas de vrais logos). |
 | `src/style.css` | Styles. Pas de `backdrop-filter`. |
 | `scripts/verifier-donnees.mjs` | Vérifie `systeme.json` (JSON valide, 5 planètes, liens en https). |
-| `scripts/test-mobile.mjs` | Test Playwright sur téléphone et tablette : 3D affichée, étiquettes, Accès rapide, ouverture/fermeture du panneau, aucune erreur. Captures dans `test-resultats/`. |
+| `scripts/test-mobile.mjs` | Test Playwright sur téléphone et tablette : 3D affichée, étiquettes, Accès rapide, ouverture/fermeture du panneau, « Changer de décor » (décor, couleurs, animation), aucune erreur. Captures dans `test-resultats/`. |
 | `.claude/agents/relecteur.md` | Agent relecteur sceptique : à lancer avant d'annoncer qu'une étape est finie (verdict PRÊT / PAS PRÊT, preuves). |
 | `.github/workflows/deploy.yml` | Sur chaque envoi : `npm run verifier`. Sur la branche principale seulement, et si tout passe : mise en ligne GitHub Pages. |
 
@@ -54,8 +54,14 @@ Dernière mise à jour : 10 novembre 2026, après l'étape 5 et la mise en place
   modèles faits dans Blender (format `.glb`, ~1-2 Mo max par île), chargés à la place de `creerIle` + `creerDecor`.
   Décidé avec la personne : on valide d'abord le prototype.
 - **Sur tablette à l'horizontale**, l'Accès rapide devient une colonne fixe à droite (sinon le système était minuscule).
-- **La planète libre** tire son décor et ses couleurs au hasard au chargement (`typesLibres`). L'étape 6 doit
-  permettre de le changer sans recharger : il faudra pouvoir recolorer l'île (`creerIle`) et remplacer `decor.surIle`.
+- **La planète libre** tire son décor et ses couleurs au hasard au chargement (`typesLibres`).
+- **« Changer de décor » (étape 6)** : bouton visible seulement dans le panneau de la planète libre. Il tire un
+  décor toujours *différent* de l'actuel (sinon on croirait que rien ne se passe). Animation « pop » de 0,6 s
+  (`animerPop` dans `planets.js`) : l'île rapetisse en tournant, change de décor, regrossit avec un rebond ;
+  instantané si « réduire les animations ». Changent : herbe, terre, anneau, icône de l'étiquette, accent du
+  panneau. L'ancien décor est effacé de la mémoire. Le rocher garde sa couleur (commun à toutes les îles).
+  Non changée : l'icône de la planète libre dans l'Accès rapide reste violette (comme avant l'étape 6).
+  Le choix n'est pas mémorisé : au rechargement, nouveau tirage.
 
 ## Ce qu'il faut savoir pour la suite
 
@@ -67,7 +73,7 @@ Dernière mise à jour : 10 novembre 2026, après l'étape 5 et la mise en place
 - Poids de la page : ~616 Ko de JavaScript (~157 Ko compressés), surtout Three.js. À surveiller pour le critère
   « s'ouvre en moins de 3 s en 4G » (étape 8).
 
-- Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=9`).
+- Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=11`).
 - Le compte GitHub Pages est activé avec la source « GitHub Actions ». La branche principale du dépôt est
   `ccr-be406ff5-wxbiv4` : c'est elle qui est mise en ligne.
 - Étape 7 : si les créatures font baisser la fluidité, elles doivent être les premières désactivées par le mode allégé.
