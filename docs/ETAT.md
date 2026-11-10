@@ -19,10 +19,12 @@ Dernière mise à jour : 10 novembre 2026, session 3 (harnais de vérification ;
 
 - Pull request n°1 (étape 6) : fusionnée. Les 2 commits arrivés après la fusion (règle du récap, état) étaient
   restés sur l'ancienne branche : récupérés en session 3.
-- Session 3 : mise en place du harnais (voir `docs/HARNAIS.md`). À faire par la personne : protéger la branche
-  principale et activer la protection GitHub contre les secrets.
+- Session 3 : mise en place du harnais (voir `docs/HARNAIS.md`), fusionné (PR n°2). La personne a protégé la
+  branche principale (règle « Protection branche principale » : pull request obligatoire, vérification `verifier`
+  obligatoire, pas de push forcé ni de suppression, 0 approbation requise) et activé la protection GitHub contre
+  les secrets. Le blocage réel du bouton « Merge » sera constaté à la prochaine pull request.
 - En attente : ses mesures de l'étape 6 sur iPhone 15 et S10 Lite (img/s pendant « Changer de décor »,
-  confort du bouton, décors vus). Lien donné : `?fps&v=11`.
+  confort du bouton, décors vus). Lien donné : `?fps&v=12`.
 - Prochaine étape : 7 (créatures). Présenter le plan et attendre son accord avant de coder.
 
 ## Mesures faites sur les vrais appareils
