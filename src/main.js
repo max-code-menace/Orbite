@@ -11,9 +11,17 @@ const container = document.getElementById('scene');
 // à chaque image. Au-delà, l'œil ne voit pas la différence mais le téléphone
 // (surtout une tablette, avec son grand écran) rame et chauffe.
 const BUDGET_PIXELS = 2.2e6;
+// Mode allégé automatique : si l'appareil n'arrive pas à suivre, on dessine
+// moins finement, palier par palier (1 = finesse normale).
+const PALIERS = [1, 0.8, 0.65, 0.5];
+const paramQualite = Number(new URLSearchParams(window.location.search).get('qualite'));
+let palier = paramQualite >= 1 && paramQualite <= PALIERS.length ? paramQualite - 1 : 0;
+const palierForce = paramQualite >= 1;
+
 function calculerPixelRatio() {
   const ecran = window.innerWidth * window.innerHeight;
-  return Math.max(1, Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(BUDGET_PIXELS / ecran)));
+  const normal = Math.max(1, Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(BUDGET_PIXELS / ecran)));
+  return Math.max(0.6, normal * PALIERS[palier]);
 }
 let pixelRatio = calculerPixelRatio();
 
@@ -166,19 +174,46 @@ function frame() {
 
   renderer.render(scene, camera);
 
+  surveillerFluidite();
+
   if (showFps) {
     fpsFrames++;
     const now = performance.now();
     if (now - fpsLast >= 500) {
-      fpsBox.textContent = `${Math.round((fpsFrames * 1000) / (now - fpsLast))} img/s`;
+      const ips = Math.round((fpsFrames * 1000) / (now - fpsLast));
+      fpsBox.textContent = `${ips} img/s · finesse ${PALIERS.length - palier}/${PALIERS.length}`;
       fpsFrames = 0;
       fpsLast = now;
     }
   }
 }
 
+// La page mesure sa fluidité sur des périodes de 2 secondes (après 2 secondes
+// de mise en route). Sous 50 images par seconde, elle passe au palier suivant.
+let mesure = { debut: 0, images: 0 };
+function remettreMesure(attente = 2000) {
+  mesure = { debut: performance.now() + attente, images: 0 };
+}
+function surveillerFluidite() {
+  if (palierForce || palier >= PALIERS.length - 1) return;
+  const now = performance.now();
+  if (now < mesure.debut) return;
+  mesure.images++;
+  const duree = now - mesure.debut;
+  if (duree < 2000) return;
+  const ips = (mesure.images * 1000) / duree;
+  if (ips < 50) {
+    palier++;
+    resize();
+    remettreMesure(1000);
+  } else {
+    remettreMesure(0);
+  }
+}
+
 function start() {
   clock.getDelta(); // remet le chrono à zéro
+  remettreMesure();
   renderer.setAnimationLoop(frame);
 }
 
