@@ -343,3 +343,172 @@ body {
     height: 16px;
   }
 }
+
+/* --- Les étiquettes se touchent (elles ouvrent la planète) ---------------- */
+.etiquette {
+  pointer-events: auto;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.25s;
+}
+
+/* Quand une planète est ouverte, les étiquettes s'effacent. */
+body.focus .etiquette {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* --- Le panneau d'une planète ------------------------------------------- */
+#panneau {
+  --accent: #c86bff;
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: min(100%, 520px);
+  margin-left: max(-50%, -260px);
+  max-height: 50vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px 16px calc(env(safe-area-inset-bottom) + 18px);
+  border-radius: 26px 26px 0 0;
+  border-bottom: none;
+  border-top: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  z-index: 8;
+  transform: translateY(105%);
+  touch-action: none;
+}
+
+#panneau .acces-poignee {
+  align-self: center;
+}
+
+#panneau.visible {
+  transform: translateY(var(--tire, 0px));
+  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+#panneau:not(.visible) {
+  transition: transform 0.25s ease-in;
+}
+
+#panneau.glisse {
+  transition: none;
+}
+
+.panneau-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.panneau-icone {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+}
+
+.panneau-icone svg {
+  width: 26px;
+  height: 26px;
+}
+
+.panneau-titre {
+  flex: 1;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.panneau-fermer {
+  all: unset;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.panneau-fermer svg {
+  width: 20px;
+  height: 20px;
+}
+
+.panneau-description {
+  margin: 0;
+  font-size: 16px;
+  color: #ece4ff;
+}
+
+.panneau-liens {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panneau-lien {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.panneau-lien.principal {
+  background: linear-gradient(135deg, #7b3cf0, #a24bff);
+  border-color: transparent;
+  box-shadow: 0 6px 20px rgba(140, 60, 255, 0.45);
+}
+
+.panneau-lien:active {
+  filter: brightness(1.2);
+}
+
+@media (orientation: landscape) and (min-width: 700px) {
+  #panneau {
+    left: calc((100% - 352px) / 2);
+    width: min(calc(100% - 376px), 480px);
+    margin-left: 0;
+    transform: translate(-50%, 105%);
+    max-height: 60vh;
+  }
+
+  #panneau.visible {
+    transform: translate(-50%, var(--tire, 0px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #panneau.visible,
+  #panneau:not(.visible) {
+    transition-duration: 0.01s;
+  }
+}
+
+/* Téléphone : pendant qu'une planète est ouverte, l'Accès rapide s'efface derrière le panneau. */
+@media not ((orientation: landscape) and (min-width: 700px)) {
+  #acces {
+    transition: opacity 0.25s;
+  }
+
+  body.focus #acces {
+    opacity: 0;
+    pointer-events: none;
+  }
+}

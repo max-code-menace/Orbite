@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createStars, createAsteroids } from './sky.js';
 import { createSun } from './sun.js';
 import { creerPlanetes } from './planets.js';
-import { remplirProfil, creerAccesRapide, ecranLarge } from './ui.js';
+import { remplirProfil, creerAccesRapide, creerPanneau, ecranLarge } from './ui.js';
 
 const container = document.getElementById('scene');
 
@@ -67,11 +67,43 @@ fetch('./systeme.json')
   .then((donnees) => {
     remplirProfil(document.getElementById('profil'), donnees.profil);
     acces = creerAccesRapide(document.getElementById('acces'), donnees.planetes, resize);
-    systeme = creerPlanetes(donnees, conteneurEtiquettes);
+    systeme = creerPlanetes(donnees, conteneurEtiquettes, choisir);
     scene.add(systeme.groupe);
     resize();
   })
   .catch((err) => console.error('Impossible de lire systeme.json', err));
+
+// --- Toucher une planète -------------------------------------------------
+let focus = null; // l'index de la planète ouverte, ou null
+const panneau = creerPanneau(document.getElementById('panneau'), () => {
+  focus = null;
+  document.body.classList.remove('focus');
+});
+
+function choisir(index) {
+  const p = systeme.planetes[index];
+  focus = index;
+  document.body.classList.add('focus');
+  panneau.ouvrir(p.donnees, p.theme);
+}
+
+// Un « tap » = le doigt se pose et se lève presque au même endroit.
+let toucher = null;
+renderer.domElement.addEventListener('pointerdown', (e) => {
+  toucher = { x: e.clientX, y: e.clientY, temps: performance.now() };
+});
+renderer.domElement.addEventListener('pointerup', (e) => {
+  if (!toucher || !systeme) return;
+  const bouge = Math.hypot(e.clientX - toucher.x, e.clientY - toucher.y);
+  const duree = performance.now() - toucher.temps;
+  toucher = null;
+  if (bouge > 12 || duree > 600) return;
+  const x = (e.clientX / window.innerWidth) * 2 - 1;
+  const y = -(e.clientY / window.innerHeight) * 2 + 1;
+  const index = systeme.planeteSous(x, y, camera);
+  if (index != null) choisir(index);
+  else panneau.fermer(); // toucher à côté referme tout
+});
 
 // --- Compteur d'images par seconde (ajouter ?fps à la fin du lien) --------
 const fpsBox = document.getElementById('fps');
@@ -96,6 +128,7 @@ function frame() {
   stars.rotation.z = elapsed * 0.003;
   asteroids.update(elapsed);
   sun.update(elapsed, motion);
+  majCamera(delta);
   if (systeme) systeme.update(elapsed, motion, camera, window.innerWidth, window.innerHeight);
 
   renderer.render(scene, camera);
@@ -126,6 +159,60 @@ document.addEventListener('visibilitychange', () => {
   else start();
 });
 
+// --- La caméra ---------------------------------------------------------------
+// La caméra a deux positions : « tout le système » (au repos) et « près d'une
+// planète » (quand on l'a touchée). Elle glisse doucement de l'une à l'autre.
+const cadre = { haut: 0, centreX: 0, w: 1, h: 1 };
+const repos = { pos: new THREE.Vector3(), cible: new THREE.Vector3(), offX: 0, offY: 0 };
+const voulu = { pos: new THREE.Vector3(), cible: new THREE.Vector3(), offX: 0, offY: 0 };
+const actuel = { pos: new THREE.Vector3(), cible: new THREE.Vector3(), offX: 0, offY: 0 };
+let premiereImage = true;
+const demiVertical = THREE.MathUtils.degToRad(camera.fov / 2);
+
+// La distance pour qu'un objet de ce rayon tienne dans une zone de cette taille (en pixels).
+function distancePour(rayon, zoneH, zoneW, h) {
+  const demiZone = Math.atan(Math.tan(demiVertical) * (zoneH / h));
+  const demiLarg = Math.atan(Math.tan(demiVertical) * (zoneW / h));
+  return rayon / Math.sin(Math.min(demiZone, demiLarg));
+}
+
+function calculerVoulu() {
+  if (focus == null || !systeme) {
+    voulu.pos.copy(repos.pos);
+    voulu.cible.copy(repos.cible);
+    voulu.offX = repos.offX;
+    voulu.offY = repos.offY;
+    return;
+  }
+  // Près de la planète : elle se place au milieu de l'espace au-dessus du panneau.
+  const { haut, centreX, w, h } = cadre;
+  const basLibre = h - panneau.hauteur();
+  const zoneH = Math.max(120, basLibre - haut);
+  const zoneW = ecranLarge.matches ? centreX * 2 : w;
+  systeme.planetes[focus].pivot.getWorldPosition(voulu.cible);
+  voulu.cible.y -= 0.35; // le milieu de l'île, rocher compris
+  const distance = Math.min(11, distancePour(2.6, zoneH, zoneW, h));
+  voulu.pos.copy(CAMERA_DIRECTION).multiplyScalar(distance).add(voulu.cible);
+  voulu.offX = w / 2 - centreX;
+  voulu.offY = h / 2 - (haut + zoneH / 2);
+}
+
+function majCamera(delta) {
+  calculerVoulu();
+  // Rapprochement en douceur : environ 0,35 seconde (instantané si « réduire les animations »).
+  const t = premiereImage || reduceMotion.matches ? 1 : 1 - Math.exp(-delta * 9);
+  premiereImage = false;
+  actuel.pos.lerp(voulu.pos, t);
+  actuel.cible.lerp(voulu.cible, t);
+  actuel.offX += (voulu.offX - actuel.offX) * t;
+  actuel.offY += (voulu.offY - actuel.offY) * t;
+
+  camera.position.copy(actuel.pos);
+  camera.lookAt(actuel.cible);
+  camera.setViewOffset(cadre.w, cadre.h, actuel.offX, actuel.offY, cadre.w, cadre.h);
+  camera.updateProjectionMatrix();
+}
+
 // --- Adapter à la taille de l'écran ---------------------------------------
 function resize() {
   const w = window.innerWidth;
@@ -138,23 +225,18 @@ function resize() {
   const haut = profil.getBoundingClientRect().bottom + 8;
   const bas = h - (acces ? acces.hauteurRepos() : 0) - 4;
   const zone = Math.max(h * 0.35, bas - haut);
-  const gauche = 0;
   const droite = ecranLarge.matches ? document.getElementById('acces').getBoundingClientRect().left - 8 : w;
-  const largeur = Math.max(w * 0.4, droite - gauche);
+  const largeur = Math.max(w * 0.4, droite);
 
-  // On recule la caméra pour que tout le système tienne dans cette zone.
-  const demiVertical = THREE.MathUtils.degToRad(camera.fov / 2);
-  const demiZone = Math.atan(Math.tan(demiVertical) * (zone / h));
-  const demiHorizontal = Math.atan(Math.tan(demiVertical) * (largeur / h));
-  const distance = RAYON_SYSTEME / Math.sin(Math.min(demiZone, demiHorizontal));
-  camera.position.copy(CAMERA_DIRECTION).multiplyScalar(distance);
-  camera.lookAt(0, 0, 0);
+  // On recule la caméra pour que tout le système tienne dans cette zone,
+  // puis on décale l'image pour que le soleil soit au milieu de cette zone.
+  const distance = distancePour(RAYON_SYSTEME, zone, largeur, h);
+  repos.pos.copy(CAMERA_DIRECTION).multiplyScalar(distance);
+  repos.cible.set(0, 0, 0);
+  repos.offX = w / 2 - largeur / 2;
+  repos.offY = h / 2 - (haut + zone / 2);
 
-  // Puis on décale l'image pour que le soleil soit au milieu de cette zone.
-  const centreY = haut + zone / 2;
-  const centreX = gauche + largeur / 2;
-  camera.setViewOffset(w, h, w / 2 - centreX, h / 2 - centreY, w, h);
-  camera.updateProjectionMatrix();
+  Object.assign(cadre, { haut, centreX: largeur / 2, w, h });
   renderer.setSize(w, h);
 }
 window.addEventListener('resize', resize);

@@ -122,7 +122,7 @@ function creerOrbite(rayon) {
 }
 
 // Crée les 5 planètes, leurs orbites et leurs étiquettes.
-export function creerPlanetes(donnees, conteneurEtiquettes) {
+export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
   const groupe = new THREE.Group();
   const plan = new THREE.Group();
   plan.rotation.x = INCLINAISON;
@@ -144,18 +144,35 @@ export function creerPlanetes(donnees, conteneurEtiquettes) {
     const ile = creerIle(theme);
     pivot.add(ile);
     pivot.add(creerAnneau(theme.anneau, 1.25));
+
+    // La zone à toucher : une boule invisible, plus grosse que l'île,
+    // pour qu'on puisse toucher la planète au pouce sans viser.
+    const zone = new THREE.Mesh(new THREE.SphereGeometry(1.5, 10, 8), new THREE.MeshBasicMaterial({ visible: false }));
+    zone.position.y = -0.3;
+    zone.userData.index = i;
+    pivot.add(zone);
     groupe.add(pivot);
 
-    // L'étiquette : du HTML normal posé par-dessus la 3D.
-    const etiquette = document.createElement('div');
+    // L'étiquette : du HTML normal posé par-dessus la 3D. La toucher ouvre aussi la planète.
+    const etiquette = document.createElement('button');
+    etiquette.type = 'button';
     etiquette.className = 'etiquette';
-    etiquette.innerHTML = `<span class="etiquette-icone" style="color:${theme.anneau}">${icons[p.id] ?? icons.libre}</span><span>${p.nom}</span>`;
+    const icone = document.createElement('span');
+    icone.className = 'etiquette-icone';
+    icone.style.color = theme.anneau;
+    icone.innerHTML = icons[p.id] ?? icons.libre;
+    const nom = document.createElement('span');
+    nom.textContent = p.nom;
+    etiquette.append(icone, nom);
+    etiquette.addEventListener('click', () => onChoisir?.(i));
     conteneurEtiquettes.appendChild(etiquette);
 
     planetes.push({
       donnees: p,
       pivot,
       ile,
+      zone,
+      theme,
       etiquette,
       phase: i * 1.3,
       baseY: base.y,
@@ -180,5 +197,14 @@ export function creerPlanetes(donnees, conteneurEtiquettes) {
     }
   }
 
-  return { groupe, planetes, update };
+  // Quelle planète se trouve sous le doigt ? (null si aucune)
+  const rayon = new THREE.Raycaster();
+  const zones = planetes.map((p) => p.zone);
+  function planeteSous(ndcX, ndcY, camera) {
+    rayon.setFromCamera({ x: ndcX, y: ndcY }, camera);
+    const touche = rayon.intersectObjects(zones, false)[0];
+    return touche ? touche.object.userData.index : null;
+  }
+
+  return { groupe, planetes, update, planeteSous };
 }

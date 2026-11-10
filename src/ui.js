@@ -189,3 +189,104 @@ export function creerAccesRapide(feuille, planetes, onChange) {
     mesurer,
   };
 }
+
+// --- Le panneau d'une planète ----------------------------------------------
+// Il monte du bas quand on touche une planète : nom, une phrase, les liens.
+// On le ferme avec la croix, en touchant à côté, ou en le glissant vers le bas.
+export function creerPanneau(panneau, onFermer) {
+  const titre = panneau.querySelector('.panneau-titre');
+  const icone = panneau.querySelector('.panneau-icone');
+  const description = panneau.querySelector('.panneau-description');
+  const liens = panneau.querySelector('.panneau-liens');
+  let ouvert = false;
+
+  function ouvrir(planete, theme) {
+    titre.textContent = planete.nom;
+    icone.innerHTML = icons[planete.id] ?? icons.libre;
+    icone.style.color = theme.anneau;
+    icone.style.background = `color-mix(in srgb, ${theme.anneau} 18%, transparent)`;
+    panneau.style.setProperty('--accent', theme.anneau);
+    description.textContent = planete.description ?? '';
+
+    liens.replaceChildren();
+    (planete.liens ?? []).slice(0, 3).forEach((l, i) => {
+      const a = el('a', i === 0 ? 'panneau-lien principal' : 'panneau-lien', l.titre);
+      a.href = l.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      liens.appendChild(a);
+    });
+
+    panneau.style.removeProperty('--tire');
+    panneau.hidden = false;
+    void panneau.offsetHeight; // le navigateur place le panneau en bas avant de le faire monter
+    panneau.classList.add('visible');
+    ouvert = true;
+  }
+
+  function fermer() {
+    if (!ouvert) return;
+    ouvert = false;
+    panneau.style.removeProperty('--tire');
+    panneau.classList.remove('visible');
+    onFermer?.();
+  }
+
+  panneau.addEventListener('transitionend', () => {
+    if (!ouvert) panneau.hidden = true;
+  });
+
+  panneau.querySelector('.panneau-fermer').addEventListener('click', fermer);
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') fermer();
+  });
+
+  // Glisser vers le bas pour fermer.
+  let depart = null;
+  let glisse = false;
+  panneau.addEventListener('pointerdown', (e) => {
+    depart = { y: e.clientY, temps: performance.now() };
+    glisse = false;
+  });
+  panneau.addEventListener('pointermove', (e) => {
+    if (!depart) return;
+    const dy = e.clientY - depart.y;
+    if (!glisse && dy > 8) {
+      glisse = true;
+      panneau.classList.add('glisse');
+      panneau.setPointerCapture?.(e.pointerId);
+    }
+    if (glisse) panneau.style.setProperty('--tire', `${Math.max(0, dy)}px`);
+  });
+  function fin(e) {
+    if (!depart) return;
+    panneau.classList.remove('glisse');
+    if (glisse) {
+      const dy = e.clientY - depart.y;
+      const vitesse = dy / Math.max(1, performance.now() - depart.temps);
+      if (dy > 80 || vitesse > 0.5) fermer();
+      else panneau.style.removeProperty('--tire');
+    }
+    depart = null;
+  }
+  panneau.addEventListener('pointerup', fin);
+  panneau.addEventListener('pointercancel', fin);
+  panneau.addEventListener(
+    'click',
+    (e) => {
+      if (glisse) {
+        e.preventDefault();
+        e.stopPropagation();
+        glisse = false;
+      }
+    },
+    true,
+  );
+
+  return {
+    ouvrir,
+    fermer,
+    estOuvert: () => ouvert,
+    hauteur: () => (ouvert ? panneau.offsetHeight : 0),
+  };
+}
