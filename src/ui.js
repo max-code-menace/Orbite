@@ -198,14 +198,25 @@ export function creerPanneau(panneau, onFermer) {
   const icone = panneau.querySelector('.panneau-icone');
   const description = panneau.querySelector('.panneau-description');
   const liens = panneau.querySelector('.panneau-liens');
+  const boutonChanger = panneau.querySelector('.panneau-changer');
   let ouvert = false;
+  let actionChanger = null;
 
-  function ouvrir(planete, theme) {
-    titre.textContent = planete.nom;
-    icone.innerHTML = icons[planete.id] ?? icons.libre;
+  // Les couleurs du panneau suivent celles de la planète.
+  function colorer(theme) {
     icone.style.color = theme.anneau;
     icone.style.background = `color-mix(in srgb, ${theme.anneau} 18%, transparent)`;
     panneau.style.setProperty('--accent', theme.anneau);
+  }
+
+  // onChanger : seulement pour la planète libre. Tire un nouveau décor
+  // et renvoie ses couleurs. Sans lui, le bouton « Changer de décor » est caché.
+  function ouvrir(planete, theme, onChanger = null) {
+    titre.textContent = planete.nom;
+    icone.innerHTML = icons[planete.id] ?? icons.libre;
+    colorer(theme);
+    actionChanger = onChanger;
+    boutonChanger.hidden = !onChanger;
     description.textContent = planete.description ?? '';
 
     liens.replaceChildren();
@@ -237,6 +248,10 @@ export function creerPanneau(panneau, onFermer) {
   });
 
   panneau.querySelector('.panneau-fermer').addEventListener('click', fermer);
+  boutonChanger.addEventListener('click', () => {
+    const nouveau = actionChanger?.();
+    if (nouveau) colorer(nouveau);
+  });
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') fermer();
   });

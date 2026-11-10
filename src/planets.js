@@ -75,6 +75,9 @@ function creerIle(theme, r = 0.8) {
   rocher.position.y = -0.22 - (r * 1.3) / 2;
   ile.add(rocher);
 
+  // On garde les couleurs de l'herbe et de la terre sous la main pour pouvoir
+  // les changer plus tard (bouton « Changer de décor » de la planète libre).
+  ile.userData.matieres = { herbe: dessus.material, terre: terre.material };
   return ile;
 }
 
@@ -96,6 +99,7 @@ function creerAnneau(couleur, r) {
     }),
   );
   groupe.add(trait, halo);
+  groupe.userData.matieres = [trait.material, halo.material];
   groupe.rotation.x = Math.PI / 2 - 0.85;
   groupe.rotation.z = 0.25;
   return groupe;
@@ -149,7 +153,8 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
     const decor = creerDecor(p.id, typeLibre);
     ile.add(decor.surIle);
     if (decor.autour) pivot.add(decor.autour);
-    pivot.add(creerAnneau(theme.anneau, 1.25));
+    const anneau = creerAnneau(theme.anneau, 1.25);
+    pivot.add(anneau);
 
     // La zone à toucher : une boule invisible, plus grosse que l'île,
     // pour qu'on puisse toucher la planète au pouce sans viser.
@@ -181,7 +186,11 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
       theme,
       decor,
       typeLibre,
+      anneau,
+      icone,
       etiquette,
+      pop: null, // l'animation de changement de décor en cours (ou null)
+      tour: 0, // le tour sur elle-même ajouté pendant cette animation
       phase: i * 1.3,
       baseY: base.y,
     });
@@ -193,7 +202,8 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
     for (const p of planetes) {
       // Chaque planète flotte légèrement et tourne lentement sur elle-même.
       p.pivot.position.y = p.baseY + Math.sin(elapsed * 0.9 + p.phase) * 0.12 * motion;
-      p.ile.rotation.y = elapsed * 0.25 + p.phase;
+      if (p.pop) animerPop(p);
+      p.ile.rotation.y = elapsed * 0.25 + p.phase + p.tour;
       p.decor.update?.(elapsed);
 
       // L'étiquette suit la planète, juste au-dessus d'elle.
@@ -215,5 +225,69 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
     return touche ? touche.object.userData.index : null;
   }
 
-  return { groupe, planetes, update, planeteSous };
+  // --- « Changer de décor » (planète libre) ---------------------------------
+  // Tire un nouveau décor, toujours différent de l'actuel (sinon on croirait
+  // que le bouton ne marche pas). Renvoie les nouvelles couleurs, ou null.
+  // instantane = sans animation (réglage « réduire les animations »).
+  function changerDecor(index, instantane = false) {
+    const p = planetes[index];
+    if (!p?.typeLibre || p.pop) return null; // pas une planète libre, ou animation déjà en cours
+    const autres = typesLibres.filter((t) => t !== p.typeLibre);
+    p.typeLibre = autres[Math.floor(Math.random() * autres.length)];
+    p.theme = decorsLibres[p.typeLibre].couleurs;
+    if (instantane) habiller(p);
+    else p.pop = { debut: performance.now(), habillee: false };
+    return p.theme;
+  }
+
+  return { groupe, planetes, update, planeteSous, changerDecor };
+}
+
+// Met sur l'île les couleurs et le décor de son type actuel.
+function habiller(p) {
+  p.ile.userData.matieres.herbe.color.set(p.theme.herbe);
+  p.ile.userData.matieres.terre.color.set(p.theme.terre);
+  for (const mat of p.anneau.userData.matieres) mat.color.set(p.theme.anneau);
+  p.icone.style.color = p.theme.anneau;
+
+  // L'ancien décor est retiré et sa forme effacée de la mémoire.
+  // (Sa matière est partagée par tous les décors : on la garde.)
+  p.ile.remove(p.decor.surIle);
+  p.decor.surIle.traverse((o) => o.geometry?.dispose());
+  if (p.decor.autour) p.pivot.remove(p.decor.autour);
+
+  p.decor = creerDecor(p.donnees.id, p.typeLibre);
+  p.ile.add(p.decor.surIle);
+  if (p.decor.autour) p.pivot.add(p.decor.autour);
+}
+
+// L'animation « pop » (0,6 s) : l'île rapetisse en tournant, change de décor
+// quand elle est toute petite, puis regrossit avec un petit rebond.
+const DUREE_RETRECIR = 0.22;
+const DUREE_POP = 0.6;
+function animerPop(p) {
+  const t = (performance.now() - p.pop.debut) / 1000;
+  let echelle;
+  if (t < DUREE_RETRECIR) {
+    const k = t / DUREE_RETRECIR;
+    echelle = 1 - 0.95 * k * k;
+  } else {
+    if (!p.pop.habillee) {
+      habiller(p);
+      p.pop.habillee = true;
+    }
+    const k = Math.min(1, (t - DUREE_RETRECIR) / (DUREE_POP - DUREE_RETRECIR));
+    // « Rebond » : dépasse un peu la taille normale, puis y revient.
+    const r = 1 + 2.70158 * (k - 1) ** 3 + 1.70158 * (k - 1) ** 2;
+    echelle = 0.05 + 0.95 * r;
+  }
+  // Un tour complet sur elle-même, qui démarre et finit en douceur.
+  const k = Math.min(1, t / DUREE_POP);
+  p.tour = Math.PI * 2 * (k * k * (3 - 2 * k));
+  if (t >= DUREE_POP) {
+    echelle = 1;
+    p.tour = 0;
+    p.pop = null;
+  }
+  p.ile.scale.setScalar(Math.max(0.05, echelle));
 }

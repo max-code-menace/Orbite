@@ -477,6 +477,39 @@ body.focus .etiquette {
   box-shadow: 0 6px 20px rgba(140, 60, 255, 0.45);
 }
 
+/* « Changer de décor » (planète libre) : aux couleurs de la planète. */
+.panneau-changer {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  background: color-mix(in srgb, var(--accent) 22%, rgba(30, 15, 62, 0.9));
+  border: 2px solid var(--accent);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.panneau-changer[hidden] {
+  display: none;
+}
+
+.panneau-changer svg {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+}
+
+.panneau-changer:active {
+  filter: brightness(1.2);
+}
+
 .panneau-lien:active {
   filter: brightness(1.2);
 }

@@ -129,6 +129,8 @@ function exposerEtatPourTests() {
         return {
           id: p.donnees.id,
           typeLibre: p.typeLibre,
+          couleurAnneau: '#' + p.anneau.userData.matieres[0].color.getHexString(),
+          echelleIle: p.ile.scale.x,
           sommetsDecor: sommets,
           signature: p.decor.signature ? p.decor.signature() : null,
         };
@@ -147,7 +149,9 @@ function choisir(index) {
   const p = systeme.planetes[index];
   focus = index;
   document.body.classList.add('focus');
-  panneau.ouvrir(p.donnees, p.theme);
+  // Seule la planète libre (celle qui a un type tiré au hasard) a le bouton « Changer de décor ».
+  const onChanger = p.typeLibre ? () => systeme.changerDecor(index, reduceMotion.matches) : null;
+  panneau.ouvrir(p.donnees, p.theme, onChanger);
 }
 
 // Un « tap » = le doigt se pose et se lève presque au même endroit.
