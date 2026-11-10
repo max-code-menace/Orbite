@@ -27,6 +27,7 @@ export function verifierGalaxie(galaxie) {
   // Les thèmes (facultatifs) : une liste { id, nom } ; chaque système en a au plus un, et chaque thème
   // a au moins un système (sinon la pastille mènerait nulle part).
   const themes = new Set();
+  const noms = new Set();
   if (galaxie.themes !== undefined) {
     if (!Array.isArray(galaxie.themes) || galaxie.themes.length > 12) {
       erreurs.push('"themes" doit être une liste de 12 thèmes au plus');
@@ -37,6 +38,9 @@ export function verifierGalaxie(galaxie) {
         else if (themes.has(t.id)) erreurs.push(`${qui} : l'id "${t.id}" est en double`);
         else themes.add(t.id);
         if (!texte(t?.nom) || t.nom.length > 20) erreurs.push(`${qui} : "nom" manque ou dépasse 20 caractères`);
+        else if (t.nom.trim().toLowerCase() === 'tous') erreurs.push(`${qui} : le nom « Tous » est réservé`);
+        else if (noms.has(t.nom.trim().toLowerCase())) erreurs.push(`${qui} : le nom "${t.nom}" est en double`);
+        else noms.add(t.nom.trim().toLowerCase());
       });
     }
   }

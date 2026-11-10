@@ -38,6 +38,12 @@ const galaxieRefusee = {
   'id de thème avec majuscule': (g) => {
     g.themes[0].id = 'Musique';
   },
+  'thème nommé « Tous » (réservé à la pastille « Tous »)': (g) => {
+    g.themes[0].nom = 'tous';
+  },
+  'deux thèmes avec le même nom': (g) => {
+    g.themes[1].nom = g.themes[0].nom;
+  },
   'nom de thème trop long': (g) => {
     g.themes[0].nom = 'x'.repeat(21);
   },
