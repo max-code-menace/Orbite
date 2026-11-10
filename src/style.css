@@ -635,6 +635,34 @@ body.focus .etiquette {
   font-weight: 700;
 }
 
+/* Les groupes de la bande (thèmes, puis amis) restent en ligne, chacun d'un bloc. */
+.bande-groupe {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Les pastilles de thèmes : plus sobres que les amis ; celle du thème choisi est colorée. */
+.theme {
+  flex: none;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(200, 160, 255, 0.35);
+  background: rgba(30, 14, 60, 0.92);
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.theme.actif {
+  background: linear-gradient(135deg, #c86bff, #5a8cff);
+  border-color: transparent;
+}
+
 /* Quand une planète est ouverte, la bande s'efface derrière le panneau. */
 #amis {
   transition: opacity 0.25s;

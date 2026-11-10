@@ -24,6 +24,34 @@ export function verifierGalaxie(galaxie) {
     else ids.add(s.id);
     for (const e of verifierDonnees(s)) erreurs.push(`${qui} : ${e}`);
   });
+  // Les thèmes (facultatifs) : une liste { id, nom } ; chaque système en a au plus un, et chaque thème
+  // a au moins un système (sinon la pastille mènerait nulle part).
+  const themes = new Set();
+  const noms = new Set();
+  if (galaxie.themes !== undefined) {
+    if (!Array.isArray(galaxie.themes) || galaxie.themes.length > 12) {
+      erreurs.push('"themes" doit être une liste de 12 thèmes au plus');
+    } else {
+      galaxie.themes.forEach((t, i) => {
+        const qui = `thème n°${i + 1} (${t?.nom ?? '?'})`;
+        if (!idSur(t?.id)) erreurs.push(`${qui} : "id" doit être en minuscules, chiffres et tirets`);
+        else if (themes.has(t.id)) erreurs.push(`${qui} : l'id "${t.id}" est en double`);
+        else themes.add(t.id);
+        if (!texte(t?.nom) || t.nom.length > 20) erreurs.push(`${qui} : "nom" manque ou dépasse 20 caractères`);
+        else if (t.nom.trim().toLowerCase() === 'tous') erreurs.push(`${qui} : le nom « Tous » est réservé`);
+        else if (noms.has(t.nom.trim().toLowerCase())) erreurs.push(`${qui} : le nom "${t.nom}" est en double`);
+        else noms.add(t.nom.trim().toLowerCase());
+      });
+    }
+  }
+  systemes.forEach((s, i) => {
+    if (s?.theme === undefined) return;
+    if (!themes.has(s.theme))
+      erreurs.push(`système n°${i + 1} (${s?.profil?.nom ?? '?'}) : le thème "${s.theme}" n'existe pas dans "themes"`);
+  });
+  for (const t of themes) {
+    if (!systemes.some((s) => s?.theme === t)) erreurs.push(`le thème "${t}" n'a aucun système`);
+  }
   // Les amis (facultatifs) : des ids qui existent, pas soi-même, pas deux fois, 6 au plus.
   systemes.forEach((s, i) => {
     if (s?.amis === undefined) return;

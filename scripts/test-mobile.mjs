@@ -202,6 +202,49 @@ async function verifierVoyage(page, nom) {
   await page.waitForTimeout(900);
   verifier((await id()) === 'yanis', 'toucher un ami ouvre son système');
 
+  // --- Les thèmes : les pastilles, et suivant/précédent qui restent dans le thème ---
+  const theme = () => page.evaluate(() => window.orbite.themeActif());
+  verifier((await page.locator('.theme').count()) === 7, 'la bande a « Tous » + 6 thèmes');
+  const pastille = await page.locator('.theme').first().boundingBox();
+  verifier(
+    pastille && pastille.height >= 40,
+    `les pastilles de thèmes sont assez hautes pour le pouce (${Math.round(pastille?.height ?? 0)} px)`,
+  );
+  verifier((await page.locator('.theme.actif').textContent()) === 'Tous', '« Tous » est choisi au départ');
+  await page.locator('.theme', { hasText: 'Cuisine' }).click();
+  await page.waitForTimeout(900);
+  verifier(
+    (await id()) === 'sacha' && (await theme()) === 'cuisine',
+    'toucher « Cuisine » emmène dans le système de cuisine (Sacha)',
+  );
+  verifier(
+    (await page.locator('.theme.actif').textContent()) === 'Cuisine',
+    'la pastille « Cuisine » est mise en avant',
+  );
+  await page.screenshot({ path: `${DOSSIER}/${nom}-8-theme.png` });
+  await page.locator('.theme', { hasText: 'Musique' }).click();
+  await page.waitForTimeout(900);
+  verifier((await id()) === 'noe', 'toucher « Musique » emmène dans le premier système musique (Noé)');
+  await page.locator('.amis-fleche').last().click();
+  await page.waitForTimeout(900);
+  verifier((await id()) === 'yanis', 'suivant : le deuxième système musique (Yanis)');
+  await page.locator('.amis-fleche').last().click();
+  await page.waitForTimeout(900);
+  verifier((await id()) === 'noe', 'suivant : on refait le tour du thème (Musique), sans en sortir');
+  await balayer(page, true);
+  verifier((await id()) === 'yanis', 'le balayage reste lui aussi dans le thème');
+  await page.locator('.theme', { hasText: 'Tous' }).click();
+  await page.waitForTimeout(300);
+  await page.locator('.amis-fleche').last().click();
+  await page.waitForTimeout(900);
+  verifier((await id()) === 'chloe' && (await theme()) === null, '« Tous » : on défile de nouveau dans toute la liste');
+  // Un ami d'un autre thème : on repasse sur « Tous » plutôt que de rester dans un thème qui ne le contient pas.
+  await page.locator('.theme', { hasText: 'Nature' }).click();
+  await page.waitForTimeout(900);
+  await page.locator('.ami').first().click();
+  await page.waitForTimeout(900);
+  verifier((await theme()) === null, "arriver chez un ami d'un autre thème repasse sur « Tous »");
+
   // Au bout de la liste, on revient au début.
   await page.goto(`${url}#adam`);
   await page.waitForTimeout(1500);

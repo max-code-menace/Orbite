@@ -20,7 +20,36 @@ test('les amis du vrai fichier sont valides, et Luna en a au moins 3 (étape « 
   assert.ok((galaxie.systemes[0].amis ?? []).length >= 3);
 });
 
+test('chaque système du vrai fichier a un thème, et il y a au moins 4 thèmes', () => {
+  assert.ok(galaxie.themes.length >= 4);
+  for (const s of galaxie.systemes) assert.ok(s.theme, `${s.id} n'a pas de thème`);
+});
+
 const galaxieRefusee = {
+  'thème inconnu sur un système': (g) => {
+    g.systemes[0].theme = 'inconnu';
+  },
+  'thème sans aucun système': (g) => {
+    g.themes.push({ id: 'vide', nom: 'Vide' });
+  },
+  'deux thèmes avec le même id': (g) => {
+    g.themes[1].id = g.themes[0].id;
+  },
+  'id de thème avec majuscule': (g) => {
+    g.themes[0].id = 'Musique';
+  },
+  'thème nommé « Tous » (réservé à la pastille « Tous »)': (g) => {
+    g.themes[0].nom = 'tous';
+  },
+  'deux thèmes avec le même nom': (g) => {
+    g.themes[1].nom = g.themes[0].nom;
+  },
+  'nom de thème trop long': (g) => {
+    g.themes[0].nom = 'x'.repeat(21);
+  },
+  'plus de 12 thèmes': (g) => {
+    g.themes = Array.from({ length: 13 }, (_, i) => ({ id: `t${i}`, nom: `T${i}` }));
+  },
   "ami qui n'existe pas": (g) => {
     g.systemes[0].amis = ['personne'];
   },
