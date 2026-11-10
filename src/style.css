@@ -644,7 +644,8 @@ body.focus .etiquette {
 }
 
 /* Les pastilles de thèmes : plus sobres que les amis ; celle du thème choisi est colorée. */
-.theme {
+.theme,
+.puce {
   flex: none;
   height: 40px;
   padding: 0 14px;
@@ -658,7 +659,8 @@ body.focus .etiquette {
   cursor: pointer;
 }
 
-.theme.actif {
+.theme.actif,
+.puce.actif {
   background: linear-gradient(135deg, #c86bff, #5a8cff);
   border-color: transparent;
 }
@@ -688,22 +690,7 @@ body.focus #amis {
 }
 
 /* --- « Fais le tien » : bouton dans le profil + petite feuille de formulaire ------- */
-.ft-ouvrir {
-  flex: none;
-  margin-left: auto;
-  height: 40px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(200, 160, 255, 0.5);
-  background: linear-gradient(135deg, #c86bff, #5a8cff);
-  color: inherit;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-#faistien {
+.feuille {
   position: fixed;
   left: 50%;
   top: calc(env(safe-area-inset-top) + 12px);
@@ -719,7 +706,7 @@ body.focus #amis {
   gap: 8px;
 }
 
-#faistien[hidden] {
+.feuille[hidden] {
   display: none;
 }
 
@@ -754,9 +741,9 @@ body.focus #amis {
   color: #d8c4ff;
 }
 
-#faistien input,
-#faistien select,
-#faistien textarea {
+.feuille input,
+.feuille select,
+.feuille textarea {
   width: 100%;
   min-height: 44px;
   padding: 8px 12px;
@@ -814,4 +801,131 @@ body.ft-ouvert #acces {
 .ft-sortie {
   flex: none;
   min-height: 150px;
+}
+
+/* --- Boutons du profil (♥ et ☰) --------------------------------------------- */
+.profil-boutons {
+  flex: none;
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.profil-bouton {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 160, 255, 0.45);
+  background: rgba(30, 14, 60, 0.92);
+  color: inherit;
+  font: inherit;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.profil-bouton.coeur[aria-pressed="true"] {
+  color: #ff6b9a;
+  border-color: #ff6b9a;
+}
+
+/* --- Le menu --------------------------------------------------------------- */
+.menu-puces,
+.menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-puces {
+  flex-direction: row;
+}
+
+.menu-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 34vh;
+  overflow-y: auto;
+}
+
+.menu-ligne {
+  flex: none;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(200, 160, 255, 0.3);
+  background: rgba(30, 14, 60, 0.92);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-textes {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-nom {
+  font-weight: 700;
+}
+
+.menu-sous {
+  font-size: 13px;
+  color: #d8c4ff;
+}
+
+.menu-coeur {
+  color: #ff6b9a;
+}
+
+/* --- L'écran d'accueil ------------------------------------------------------ */
+#accueil {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(13, 8, 32, 0.86);
+}
+
+#accueil[hidden] {
+  display: none;
+}
+
+.accueil-carte {
+  width: min(100%, 360px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+}
+
+.accueil-titre {
+  margin: 0;
+  font-size: 44px;
+  letter-spacing: 0.04em;
+}
+
+.accueil-texte {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #ece4ff;
+}
+
+.accueil-lien {
+  min-height: 44px;
+  border: 0;
+  background: none;
+  color: #d8c4ff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }

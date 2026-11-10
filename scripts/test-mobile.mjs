@@ -39,6 +39,16 @@ for (const { nom, options } of appareils) {
   page.on('pageerror', (e) => erreurs.push(e.message));
   page.on('console', (m) => m.type() === 'error' && erreurs.push(m.text()));
 
+  // Appareil neuf : l'écran d'accueil s'affiche, une seule fois.
+  await page.goto(url);
+  await page.waitForTimeout(2000);
+  verifier(await page.locator('#accueil').isVisible(), "l'écran d'accueil s'affiche sur un appareil neuf");
+  await page.screenshot({ path: `${DOSSIER}/${nom}-0-bienvenue.png` });
+  await page.locator('[data-action=commencer]').click();
+  verifier(!(await page.locator('#accueil').isVisible()), "« Commencer » ferme l'accueil");
+  await page.reload();
+  await page.waitForTimeout(1500);
+  verifier(!(await page.locator('#accueil').isVisible()), "l'accueil ne revient pas au rechargement");
   await page.goto(url);
   await page.waitForTimeout(2500);
   await page.screenshot({ path: `${DOSSIER}/${nom}-1-accueil.png` });
@@ -256,13 +266,14 @@ async function verifierVoyage(page, nom) {
   // --- « Fais le tien » : le formulaire prépare un message, rien n'est enregistré ---
   await page.goto(`${url}#luna`);
   await page.waitForTimeout(1500);
-  const bouton = await page.locator('.ft-ouvrir').boundingBox();
+  const bouton = await page.locator('.profil-bouton').first().boundingBox();
   verifier(
-    bouton && bouton.height >= 40 && bouton.x + bouton.width <= page.viewportSize().width,
-    'le bouton « Fais le tien » est visible et assez grand',
+    bouton && bouton.height >= 44 && bouton.x + bouton.width <= page.viewportSize().width,
+    'les boutons ♥ et ☰ du profil sont visibles et assez grands',
   );
-  await page.locator('.ft-ouvrir').click();
-  verifier(await page.locator('#faistien').isVisible(), 'toucher « Fais le tien » ouvre le formulaire');
+  await page.locator('.profil-bouton[aria-label="Ouvrir le menu"]').click();
+  await page.locator('#menu .ft-bouton', { hasText: 'Fais le tien' }).click();
+  verifier(await page.locator('#faistien').isVisible(), '« Fais le tien » du menu ouvre le formulaire');
   await page.locator('#faistien button.ft-bouton').first().click();
   verifier((await page.locator('.ft-erreur').textContent()).includes('nom'), 'sans nom, le formulaire le dit');
   await page.locator('#faistien input[type=text]').first().fill('Ana Test');
@@ -278,6 +289,58 @@ async function verifierVoyage(page, nom) {
   await page.screenshot({ path: `${DOSSIER}/${nom}-9-faistien.png` });
   await page.locator('#faistien .ft-fermer').click();
   verifier(!(await page.locator('#faistien').isVisible()), 'le formulaire se ferme');
+
+  // --- Favoris ♥, menu, recherche, « Surprends-moi » ---
+  await page.goto(`${url}#luna`);
+  await page.waitForTimeout(1500);
+  const coeur = page.locator('.profil-bouton.coeur');
+  verifier((await coeur.getAttribute('aria-pressed')) === 'false', 'le ♥ est éteint au départ');
+  await coeur.click();
+  verifier((await coeur.getAttribute('aria-pressed')) === 'true', 'toucher le ♥ ajoute aux favoris');
+  await page.reload();
+  await page.waitForTimeout(1500);
+  verifier(
+    (await page.locator('.profil-bouton.coeur').getAttribute('aria-pressed')) === 'true',
+    'le favori est gardé au rechargement',
+  );
+  await page.locator('.profil-bouton[aria-label="Ouvrir le menu"]').click();
+  verifier(await page.locator('#menu').isVisible(), "le menu s'ouvre");
+  verifier((await page.locator('#menu .menu-ligne').count()) >= 12, 'le menu liste tous les créateurs');
+  verifier(
+    (await page.locator('#menu .ft-note').last().textContent()).includes('5 planètes'),
+    'le menu donne les chiffres du système',
+  );
+  await page.screenshot({ path: `${DOSSIER}/${nom}-10-menu.png` });
+  await page.locator('#menu input[type=search]').fill('NOE');
+  verifier(
+    (await page.locator('#menu .menu-ligne').count()) === 1,
+    'chercher « NOE » trouve un seul créateur (sans tenir compte de la casse)',
+  );
+  await page.locator('#menu input[type=search]').fill('zzzz');
+  verifier(
+    (await page.locator('#menu .menu-liste').textContent()) === '' &&
+      (await page.locator('#menu .ft-note').first().textContent()).includes('Personne'),
+    'une recherche sans résultat le dit',
+  );
+  await page.locator('#menu input[type=search]').fill('');
+  await page.locator('#menu .puce', { hasText: 'Favoris' }).click();
+  verifier((await page.locator('#menu .menu-ligne').count()) === 1, 'le filtre Favoris ne montre que Luna');
+  await page.locator('#menu .puce', { hasText: 'Tous' }).click();
+  await page.locator('#menu input[type=search]').fill('noe');
+  await page.locator('#menu .menu-ligne').first().click();
+  await page.waitForTimeout(900);
+  verifier(
+    !(await page.locator('#menu').isVisible()) && (await id()) === 'noe',
+    'toucher un résultat ferme le menu et voyage chez lui',
+  );
+  await page.locator('.profil-bouton[aria-label="Ouvrir le menu"]').click();
+  await page.locator('#menu .ft-bouton', { hasText: 'Surprends-moi' }).click();
+  await page.waitForTimeout(900);
+  verifier((await id()) !== 'noe', '« Surprends-moi » mène ailleurs');
+  // On revient chez Luna pour la suite (un simple changement d'adresse ne recharge pas la page).
+  await page.goto(`${url}#luna`);
+  await page.reload();
+  await page.waitForTimeout(1500);
 
   // Une adresse qui ne veut rien dire ne casse rien.
   await page.goto(`${url}#%E0%A4%A`);

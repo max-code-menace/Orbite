@@ -53,7 +53,7 @@ function champ(libelle, input) {
 // Crée la feuille du formulaire (cachée) et renvoie { creerBouton, ouvrir, fermer }.
 // themes : la liste [{ id, nom }] de galaxie.json (peut être vide).
 export function creerFaisLeTien(themes, onOuvert) {
-  const feuille = el('section', 'verre');
+  const feuille = el('section', 'verre feuille');
   feuille.id = 'faistien';
   feuille.hidden = true;
   feuille.setAttribute('aria-label', 'Fais le tien');
@@ -151,13 +151,5 @@ export function creerFaisLeTien(themes, onOuvert) {
     }
   });
 
-  // Le bouton « ✨ Fais le tien » vient dans le profil (rappelé à chaque changement de système).
-  function ajouterBouton(profil) {
-    const b = el('button', 'ft-ouvrir', '✨ Fais le tien');
-    b.type = 'button';
-    b.addEventListener('click', ouvrir);
-    profil.appendChild(b);
-  }
-
-  return { ajouterBouton, ouvrir, fermer: fermerFeuille };
+  return { ouvrir, fermer: fermerFeuille };
 }
