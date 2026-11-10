@@ -4,7 +4,7 @@ import { createSun } from './sun.js';
 import { PALIERS, calculerRatio, creaturesVisibles, palierApres } from './fluidite.js';
 import { creerPlanetes } from './planets.js';
 import { remplirProfil, creerAccesRapide, creerPanneau, ecranLarge } from './ui.js';
-import { amisDe, indexDepuisAdresse, sensDuBalayage, voisin } from './parcours.js';
+import { amisDe, indexDepuisAdresse, indexNomme, sensDuBalayage, voisin } from './parcours.js';
 import { creerBandeAmis } from './amis.js';
 
 const container = document.getElementById('scene');
@@ -138,9 +138,16 @@ fetch('./galaxie.json')
   .catch((err) => console.error('Impossible de lire galaxie.json', err));
 
 // Si l'adresse change sans recharger la page (lien collé dans l'onglet ouvert, bouton retour),
-// on voyage vers le système nommé. (Nos propres mises à jour de l'adresse ne déclenchent rien.)
+// on voyage vers le système nommé ; une adresse qui n'en nomme aucun est ignorée. Si un voyage
+// est en cours, on retient la demande et on la reprend à l'arrivée.
+// (Nos propres mises à jour de l'adresse ne déclenchent rien.)
+let adresseEnAttente = null;
 window.addEventListener('hashchange', () => {
-  if (galaxie) voyagerVers(indexDepuisAdresse(galaxie.systemes, window.location.hash));
+  if (!galaxie) return;
+  const index = indexNomme(galaxie.systemes, window.location.hash);
+  if (index < 0) return;
+  if (voyage) adresseEnAttente = index;
+  else voyagerVers(index);
 });
 
 // --- Le voyage : le système sort sur le côté, le suivant arrive de l'autre ---
@@ -178,7 +185,13 @@ function majVoyage() {
   const k = Math.min(1, (performance.now() - voyage.debut) / 1000 / T_ENTREE);
   const reste = (1 - k) ** 3; // arrive vite, puis se pose doucement
   poserSysteme(voyage.sens * 6 * reste, 1 - 0.5 * reste);
-  if (k >= 1) voyage = null;
+  if (k < 1) return;
+  voyage = null;
+  if (adresseEnAttente != null) {
+    const index = adresseEnAttente;
+    adresseEnAttente = null;
+    voyagerVers(index);
+  }
 }
 
 // --- État lisible par le test automatique (scripts/test-mobile.mjs) ----------

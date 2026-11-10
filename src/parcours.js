@@ -1,19 +1,21 @@
 // Le voyage d'un système à l'autre : choisir lequel afficher, sans toucher à la 3D.
 // (Fichier à part pour pouvoir être testé sans navigateur : tests/logique.test.mjs.)
 
-// Quel système afficher au démarrage ? L'adresse de la page peut en nommer un
-// (ex. …/#noe : c'est ce lien qu'on mettra en bio). Sinon, le premier de la liste.
-export function indexDepuisAdresse(systemes, hash) {
+// Le système nommé par l'adresse de la page (ex. …/#noe : c'est ce lien qu'on mettra en bio).
+// Renvoie sa position, ou -1 si l'adresse ne nomme aucun système (vide, inconnue, abîmée).
+export function indexNomme(systemes, hash) {
   let id = (hash ?? '').replace(/^#/, '');
   try {
     id = decodeURIComponent(id);
   } catch {
-    return 0; // adresse mal écrite (ex. « %E0% ») : on n'essaie pas de la lire
+    return -1; // adresse mal écrite (ex. « %E0% ») : on n'essaie pas de la lire
   }
-  return Math.max(
-    0,
-    systemes.findIndex((s) => s.id === id.toLowerCase()),
-  );
+  return systemes.findIndex((s) => s.id === id.toLowerCase());
+}
+
+// Quel système afficher au démarrage ? Celui de l'adresse, sinon le premier de la liste.
+export function indexDepuisAdresse(systemes, hash) {
+  return Math.max(0, indexNomme(systemes, hash));
 }
 
 // Le système d'à côté dans la liste : sens = +1 (suivant) ou -1 (précédent).

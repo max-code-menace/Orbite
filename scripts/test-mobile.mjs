@@ -215,6 +215,25 @@ async function verifierVoyage(page, nom) {
   await page.waitForTimeout(1500);
   verifier((await id()) === 'luna', 'une adresse abîmée ouvre le premier système');
 
+  // Une adresse #inconnue collée dans l'onglet ouvert ne déclenche aucun voyage.
+  await page.evaluate(() => {
+    window.location.hash = '#personne';
+  });
+  await page.waitForTimeout(900);
+  verifier((await id()) === 'luna', 'une adresse inconnue collée dans la page ne fait pas voyager');
+
+  // Adresse changée pendant un voyage : on arrive quand même au système demandé.
+  await page.locator('.amis-fleche').last().click(); // luna → noe (animation de ~0,46 s)
+  await page.waitForTimeout(100);
+  await page.evaluate(() => {
+    window.location.hash = '#milo';
+  });
+  await page.waitForTimeout(2200);
+  verifier((await id()) === 'milo', 'adresse changée en plein voyage : on finit chez le système demandé (#milo)');
+  verifier(new URL(page.url()).hash === '#milo', "et l'adresse affichée correspond au système affiché");
+  await page.goto(`${url}?qualite=1`);
+  await page.waitForTimeout(1500);
+
   // Planète ouverte : le balayage ne change pas de système (on ferme d'abord).
   await page.locator('.etiquette', { hasText: 'Spotify' }).click({ force: true });
   await page.waitForTimeout(1200);

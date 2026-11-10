@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { creerDecor, tirerAutreType, typesLibres } from '../src/decors.js';
 import { creerCreature, pose } from '../src/creatures.js';
-import { amisDe, indexDepuisAdresse, sensDuBalayage, voisin } from '../src/parcours.js';
+import { amisDe, indexDepuisAdresse, indexNomme, sensDuBalayage, voisin } from '../src/parcours.js';
 import { BUDGET_PIXELS, PALIERS, calculerRatio, creaturesVisibles, palierApres } from '../src/fluidite.js';
 
 const ecrans = {
@@ -124,6 +124,11 @@ test("l'adresse #noe ouvre le système de Noé ; une adresse inconnue ou abîmé
   assert.equal(indexDepuisAdresse(liste, ''), 0);
   assert.equal(indexDepuisAdresse(liste, undefined), 0);
   assert.equal(indexDepuisAdresse(liste, '#%E0%A4%A'), 0);
+});
+
+test("indexNomme dit -1 quand l'adresse ne nomme aucun système (elle ne doit alors rien déclencher)", () => {
+  assert.equal(indexNomme(liste, '#ines'), 2);
+  for (const h of ['#personne', '', undefined, '#%E0%A4%A']) assert.equal(indexNomme(liste, h), -1);
 });
 
 test('suivant / précédent font le tour de la liste, sans cul-de-sac', () => {
