@@ -33,6 +33,7 @@ Dernière mise à jour : 10 novembre 2026, session 3 (harnais de vérification ;
 - **Tablette Samsung S10 Lite (Chrome)** : 60-67 img/s à l'étape 1 ; tombée à **24 img/s** à l'étape 4 ;
   remontée à **80-89 img/s** après avoir retiré le flou `backdrop-filter`, plafonné la résolution et rendu le
   canvas opaque. Le mode allégé automatique n'a donc pas eu à agir sur elle.
+  Étapes 5-6 (10/11/2026, `v=12`) : **90 img/s constant** ; **83 img/s** en touchant « Changer de décor » à répétition.
 - Rien n'a encore été mesuré sur un vrai « vieux » téléphone.
 
 ## Comment c'est construit (fichiers)
