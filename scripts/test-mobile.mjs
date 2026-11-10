@@ -360,7 +360,9 @@ async function verifierVoyage(page, nom) {
   await page.evaluate(() => {
     window.location.hash = '#milo';
   });
-  await page.waitForTimeout(2200);
+  // On attend l'arrivée (6 s au plus) plutôt qu'un chrono fixe : la 3D logicielle du test est parfois lente.
+  await page.waitForFunction(() => window.orbite.systemeId() === 'milo', null, { timeout: 6000 }).catch(() => {});
+  await page.waitForTimeout(300);
   verifier((await id()) === 'milo', 'adresse changée en plein voyage : on finit chez le système demandé (#milo)');
   verifier(new URL(page.url()).hash === '#milo', "et l'adresse affichée correspond au système affiché");
   await page.goto(`${url}?qualite=1`);

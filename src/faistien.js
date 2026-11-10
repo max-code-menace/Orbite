@@ -57,6 +57,8 @@ export function creerFaisLeTien(themes, onOuvert) {
   feuille.id = 'faistien';
   feuille.hidden = true;
   feuille.setAttribute('aria-label', 'Fais le tien');
+  feuille.setAttribute('role', 'dialog');
+  feuille.setAttribute('aria-modal', 'true');
 
   const entete = el('div', 'ft-entete');
   const fermer = el('button', 'ft-fermer', '✕');
@@ -111,15 +113,23 @@ export function creerFaisLeTien(themes, onOuvert) {
   );
   document.body.appendChild(feuille);
 
+  let declencheur = null; // l'élément qui avait le focus avant l'ouverture
   const ouvrir = () => {
     feuille.hidden = false;
     document.body.classList.add('ft-ouvert');
+    declencheur = document.activeElement;
+    nom.focus({ preventScroll: true });
     onOuvert?.();
   };
   const fermerFeuille = () => {
     feuille.hidden = true;
     document.body.classList.remove('ft-ouvert');
+    if (declencheur?.isConnected) declencheur.focus({ preventScroll: true });
+    declencheur = null;
   };
+  feuille.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') fermerFeuille();
+  });
   fermer.addEventListener('click', fermerFeuille);
 
   preparer.addEventListener('click', () => {

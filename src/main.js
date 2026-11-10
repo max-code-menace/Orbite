@@ -17,6 +17,7 @@ import { creerBandeAmis } from './amis.js';
 import { creerFaisLeTien } from './faistien.js';
 import { creerMenu } from './menu.js';
 import { montrerAccueil } from './accueil.js';
+import { montrerTraversee } from './traversee.js';
 
 const container = document.getElementById('scene');
 
@@ -172,9 +173,11 @@ fetch('./galaxie.json')
 // est en cours, on retient la demande et on la reprend à l'arrivée.
 // (Nos propres mises à jour de l'adresse ne déclenchent rien.)
 let adresseEnAttente = null;
-window.addEventListener('hashchange', () => {
+window.addEventListener('hashchange', (e) => {
   if (!galaxie) return;
-  const index = indexNomme(galaxie.systemes, window.location.hash);
+  // L'adresse telle qu'elle était AU MOMENT du changement (et non celle d'aujourd'hui : si un système vient
+  // d'arriver, afficherSysteme a déjà réécrit l'adresse, et la demande serait perdue).
+  const index = indexNomme(galaxie.systemes, new URL(e.newURL).hash);
   if (index < 0) return;
   if (voyage) adresseEnAttente = index;
   else voyagerVers(index);
@@ -204,7 +207,10 @@ function choisirTheme(id) {
   if (!galaxie) return;
   themeActif = id;
   bandeAmis.marquerTheme(id);
-  if (id && galaxie.systemes[courant].theme !== id) voyagerVers(indicesDuTheme(galaxie.systemes, id)[0]);
+  if (id && galaxie.systemes[courant].theme !== id) {
+    montrerTraversee(galaxie.themes.find((t) => t.id === id)?.nom ?? '', reduceMotion.matches);
+    voyagerVers(indicesDuTheme(galaxie.systemes, id)[0]);
+  }
 }
 
 function poserSysteme(decalage, echelle) {

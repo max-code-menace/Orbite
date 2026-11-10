@@ -35,6 +35,11 @@ Dernière mise à jour : 10 novembre 2026, session 6 (thèmes fusionnés, PR n°
   dans le menu et sur l'accueil. **Vérifié (simulation)** : tests rapides 78/78 ; `npm run verifier` ✅ téléphone + tablette
   (accueil une seule fois, ♥ gardé au rechargement, recherche, filtre, voyage depuis un résultat, surprise) ; captures regardées.
   **Pas vérifié** : appareils réels (Safari en navigation privée : les favoris ne tiennent pas), partage réel, fluidité.
+  **Traversée** « Direction la galaxie X… » (`src/traversee.js`) quand on choisit un thème (1,1 s, on peut toucher à travers,
+  sautée avec « réduire les animations »). **Bug corrigé** : si l'adresse changeait au moment exact où un système arrivait, la
+  demande était perdue (le test échouait 2 fois sur 3) ; on lit maintenant l'adresse du moment du changement. Menu et formulaire :
+  Échap ferme, le focus va dans la feuille puis revient au bouton, rôle « dialogue ». **Pas vérifié** : la traversée sur appareil
+  (esthétique, fluidité) ; aucun test dédié (demande de la personne : « on corrige après »).
   **Pas fait (demande un serveur)** : comptes, suivre, messagerie, planètes privées, créer son système pour de vrai.
 - **Suite possible** : écran « Direction la galaxie… » ; amis d'abord dans l'ordre du défilé ; un vrai canal pour recevoir les demandes.
 
@@ -174,7 +179,7 @@ Dernière mise à jour : 10 novembre 2026, session 6 (thèmes fusionnés, PR n°
 - Poids de la page : ~616 Ko de JavaScript (~157 Ko compressés), surtout Three.js. À surveiller pour le critère
   « s'ouvre en moins de 3 s en 4G » (étape 8).
 
-- Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=16`).
+- Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=17`).
 - Le compte GitHub Pages est activé avec la source « GitHub Actions ». La branche principale du dépôt est
   `ccr-be406ff5-wxbiv4` : c'est elle qui est mise en ligne.
 - Étape 8 : le brief demande aussi « moins d'étoiles, pas de lueurs » dans le mode allégé ; aujourd'hui seuls les

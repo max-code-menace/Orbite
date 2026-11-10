@@ -58,9 +58,14 @@
         <h1 class="accueil-titre">Orbite</h1>
         <p class="accueil-texte">Explore des univers, découvre des créateurs et partage le tien.</p>
         <button class="ft-bouton" type="button" data-action="commencer">Commencer</button>
-        <button class="accueil-lien" type="button" data-action="faislETien">✨ Fais le tien</button>
+        <button class="accueil-lien" type="button" data-action="faisletien">✨ Fais le tien</button>
       </div>
     </section>
+    <!-- La traversée « Direction la galaxie… » (voir traversee.js) -->
+    <div id="traversee" hidden aria-live="polite">
+      <div class="traversee-traits" aria-hidden="true"></div>
+      <p class="traversee-texte"></p>
+    </div>
     <div id="fps" hidden></div>
     <script type="module" src="./src/main.js"></script>
   </body>

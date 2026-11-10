@@ -24,11 +24,14 @@ export const compterLiens = (systeme) => systeme.planetes.reduce((n, p) => n + (
 export function creerMenu(api) {
   let favoris = lireFavoris();
   let seulementFavoris = false;
+  let declencheur = null; // l'élément qui avait le focus avant l'ouverture
 
   const feuille = el('section', 'verre feuille');
   feuille.id = 'menu';
   feuille.hidden = true;
   feuille.setAttribute('aria-label', 'Menu');
+  feuille.setAttribute('role', 'dialog');
+  feuille.setAttribute('aria-modal', 'true');
 
   const fermer = bouton('ft-fermer', '✕', () => fermerMenu());
   fermer.setAttribute('aria-label', 'Fermer');
@@ -126,11 +129,20 @@ export function creerMenu(api) {
     choisirFiltre(false);
     feuille.hidden = false;
     document.body.classList.add('ft-ouvert');
+    declencheur = document.activeElement;
+    recherche.focus({ preventScroll: true });
   }
   function fermerMenu() {
     feuille.hidden = true;
     document.body.classList.remove('ft-ouvert');
+    // Le focus revient sur le bouton qui a ouvert le menu (sauf s'il a disparu entre-temps).
+    if (declencheur?.isConnected) declencheur.focus({ preventScroll: true });
+    declencheur = null;
   }
+  // Échap ferme le menu.
+  feuille.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') fermerMenu();
+  });
 
   // Le ♥ du profil : aimer / ne plus aimer le système affiché.
   let coeur = null;

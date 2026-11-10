@@ -30,7 +30,7 @@ export function montrerAccueil({ onFaisLeTien }) {
     apres?.();
   };
   ecran.querySelector('[data-action=commencer]').addEventListener('click', () => fermer());
-  ecran.querySelector('[data-action=faislETien]').addEventListener('click', () => fermer(onFaisLeTien));
+  ecran.querySelector('[data-action=faisletien]').addEventListener('click', () => fermer(onFaisLeTien));
   ecran.hidden = false;
   document.body.classList.add('accueil-ouvert');
 }
