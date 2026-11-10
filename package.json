@@ -12,7 +12,8 @@
     "lint": "biome check .",
     "test": "node --test 'tests/*.test.mjs'",
     "secrets": "secretlint \"**/*\"",
-    "audit": "npm audit --audit-level=high"
+    "audit": "npm audit --audit-level=high",
+    "check": "node scripts/check.mjs"
   },
   "dependencies": {
     "three": "0.187.0"

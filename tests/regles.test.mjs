@@ -9,7 +9,8 @@ const sources = readdirSync(new URL('../src', import.meta.url)).map((f) => `src/
 const code = [...sources, 'index.html'].map((f) => ({ f, texte: lire(f) }));
 
 test('pas de flou backdrop-filter (faisait tomber la tablette à 24 img/s)', () => {
-  for (const { f, texte } of code) assert.ok(!/backdrop-filter\s*:|backdropFilter/.test(texte), `${f} utilise backdrop-filter`);
+  for (const { f, texte } of code)
+    assert.ok(!/backdrop-filter\s*:|backdropFilter/.test(texte), `${f} utilise backdrop-filter`);
 });
 
 test('pas de lien écrit en dur dans le code (les liens vivent dans systeme.json)', () => {
