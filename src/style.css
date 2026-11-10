@@ -1,0 +1,49 @@
+:root {
+  --nuit: #0d0820;
+  --violet-fonce: #241047;
+  --violet: #6b3bd6;
+  --texte: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  color: var(--texte);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Le ciel : un dégradé bleu nuit et violet, dessiné par le navigateur (gratuit pour le téléphone). */
+  background:
+    radial-gradient(ellipse 90% 55% at 70% 30%, rgba(155, 70, 230, 0.35), transparent 70%),
+    radial-gradient(ellipse 80% 50% at 15% 75%, rgba(60, 80, 220, 0.3), transparent 70%),
+    radial-gradient(ellipse 120% 80% at 50% 50%, var(--violet-fonce), var(--nuit) 75%);
+  background-color: var(--nuit);
+  -webkit-tap-highlight-color: transparent;
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+}
+
+#scene canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Petit compteur d'images par seconde, affiché seulement avec ?fps à la fin du lien. */
+#fps {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 8px);
+  right: 8px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  font: 600 13px/1.2 ui-monospace, monospace;
+  z-index: 10;
+}
