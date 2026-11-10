@@ -10,6 +10,19 @@
   <body>
     <div id="scene" aria-hidden="true"></div>
     <div id="etiquettes"></div>
+
+    <header id="profil" class="verre"></header>
+
+    <section id="acces" class="verre" aria-label="Accès rapide">
+      <button class="acces-entete" type="button" aria-label="Ouvrir ou fermer l'Accès rapide">
+        <span class="acces-poignee"></span>
+        <span class="acces-titre">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z" fill="#ffd34d"/></svg>
+          Accès rapide
+        </span>
+      </button>
+      <nav class="acces-liste"></nav>
+    </section>
     <div id="fps" hidden></div>
     <script type="module" src="./src/main.js"></script>
   </body>

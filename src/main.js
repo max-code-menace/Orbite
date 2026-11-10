@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createStars, createAsteroids } from './sky.js';
 import { createSun } from './sun.js';
 import { creerPlanetes } from './planets.js';
+import { remplirProfil, creerAccesRapide, ecranLarge } from './ui.js';
 
 const container = document.getElementById('scene');
 
@@ -59,12 +60,16 @@ scene.add(sun.group);
 
 // Les planètes arrivent dès que le fichier de données est lu.
 let systeme = null;
+let acces = null;
 const conteneurEtiquettes = document.getElementById('etiquettes');
 fetch('./systeme.json')
   .then((r) => r.json())
   .then((donnees) => {
+    remplirProfil(document.getElementById('profil'), donnees.profil);
+    acces = creerAccesRapide(document.getElementById('acces'), donnees.planetes, resize);
     systeme = creerPlanetes(donnees, conteneurEtiquettes);
     scene.add(systeme.groupe);
+    resize();
   })
   .catch((err) => console.error('Impossible de lire systeme.json', err));
 
@@ -126,12 +131,29 @@ function resize() {
   const w = window.innerWidth;
   const h = window.innerHeight;
   camera.aspect = w / h;
-  // On recule la caméra pour que tout le système tienne, en largeur comme en hauteur.
+
+  // La place libre pour le système : sous le profil, et au-dessus de l'Accès
+  // rapide à moitié ouvert (téléphone) ou à gauche de sa colonne (tablette).
+  const profil = document.getElementById('profil');
+  const haut = profil.getBoundingClientRect().bottom + 8;
+  const bas = h - (acces ? acces.hauteurRepos() : 0) - 4;
+  const zone = Math.max(h * 0.35, bas - haut);
+  const gauche = 0;
+  const droite = ecranLarge.matches ? document.getElementById('acces').getBoundingClientRect().left - 8 : w;
+  const largeur = Math.max(w * 0.4, droite - gauche);
+
+  // On recule la caméra pour que tout le système tienne dans cette zone.
   const demiVertical = THREE.MathUtils.degToRad(camera.fov / 2);
-  const demiHorizontal = Math.atan(Math.tan(demiVertical) * camera.aspect);
-  const distance = RAYON_SYSTEME / Math.sin(Math.min(demiVertical, demiHorizontal));
+  const demiZone = Math.atan(Math.tan(demiVertical) * (zone / h));
+  const demiHorizontal = Math.atan(Math.tan(demiVertical) * (largeur / h));
+  const distance = RAYON_SYSTEME / Math.sin(Math.min(demiZone, demiHorizontal));
   camera.position.copy(CAMERA_DIRECTION).multiplyScalar(distance);
   camera.lookAt(0, 0, 0);
+
+  // Puis on décale l'image pour que le soleil soit au milieu de cette zone.
+  const centreY = haut + zone / 2;
+  const centreX = gauche + largeur / 2;
+  camera.setViewOffset(w, h, w / 2 - centreX, h / 2 - centreY, w, h);
   camera.updateProjectionMatrix();
   renderer.setSize(w, h);
 }

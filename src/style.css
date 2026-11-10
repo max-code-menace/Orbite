@@ -39,7 +39,7 @@ body {
 /* Petit compteur d'images par seconde, affiché seulement avec ?fps à la fin du lien. */
 #fps {
   position: fixed;
-  top: calc(env(safe-area-inset-top) + 8px);
+  top: calc(env(safe-area-inset-top) + 92px);
   right: 8px;
   padding: 4px 8px;
   border-radius: 8px;
@@ -83,4 +83,263 @@ body {
 .etiquette-icone svg {
   width: 100%;
   height: 100%;
+}
+
+/* --- Verre dépoli, commun au profil et à l'Accès rapide ------------------ */
+.verre {
+  background: rgba(28, 14, 58, 0.78);
+  border: 1px solid rgba(200, 160, 255, 0.22);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 40px rgba(10, 0, 30, 0.45);
+}
+
+/* --- En haut : qui c'est ------------------------------------------------- */
+#profil {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(calc(100% - 24px), 480px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 10px 10px;
+  border-radius: 22px;
+  z-index: 5;
+}
+
+.profil-photo {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 18px;
+  background: linear-gradient(135deg, #ff8a3d, #c43bff);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+}
+
+.profil-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profil-textes {
+  min-width: 0;
+}
+
+.profil-ligne {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.profil-nom {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profil-pseudo {
+  font-size: 14px;
+  color: #d9c8ff;
+  white-space: nowrap;
+}
+
+.profil-bio {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: #ece4ff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- En bas : Accès rapide ---------------------------------------------- */
+#acces {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: min(100%, 520px);
+  margin-left: max(-50%, -260px);
+  max-height: 78vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 26px 26px 0 0;
+  border-bottom: none;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 6;
+  touch-action: none;
+  will-change: transform;
+}
+
+#acces.anime {
+  transition: transform 0.32s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.acces-entete {
+  all: unset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 8px;
+  cursor: pointer;
+}
+
+.acces-poignee {
+  width: 44px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.acces-titre {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.acces-titre svg {
+  width: 22px;
+  height: 22px;
+}
+
+.acces-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 12px 14px;
+  overflow-y: auto;
+}
+
+#acces:not(.ouverte) .acces-liste {
+  overflow: hidden;
+}
+
+.acces-ligne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  padding: 8px 12px 8px 8px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: inherit;
+  text-decoration: none;
+}
+
+.acces-ligne:active {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.acces-icone {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+}
+
+.acces-icone svg {
+  width: 24px;
+  height: 24px;
+}
+
+.acces-textes {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.acces-nom {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.acces-lien {
+  font-size: 14px;
+  color: #ddd0ff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.acces-fleche {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: #cbb6ff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #acces.anime {
+    transition-duration: 0.01s;
+  }
+}
+
+/* --- Tablette à l'horizontale : profil à gauche, Accès rapide en colonne à droite --- */
+@media (orientation: landscape) and (min-width: 700px) {
+  #profil {
+    left: 16px;
+    transform: none;
+    width: min(420px, calc(100% - 400px));
+  }
+
+  #acces {
+    top: calc(env(safe-area-inset-top) + 12px);
+    bottom: 12px;
+    left: auto;
+    right: 12px;
+    margin-left: 0;
+    width: 340px;
+    max-height: none;
+    border-radius: 22px;
+    border-bottom: 1px solid rgba(200, 160, 255, 0.22);
+    padding-bottom: 0;
+    transform: none !important;
+    touch-action: auto;
+  }
+
+  .acces-poignee {
+    display: none;
+  }
+
+  .acces-entete {
+    cursor: default;
+    padding-top: 14px;
+  }
+
+  #fps {
+    right: 364px;
+    top: 12px;
+  }
+}
+
+/* Petits téléphones : étiquettes un peu plus compactes pour ne pas se toucher. */
+@media (max-width: 380px) {
+  .etiquette {
+    font-size: 13px;
+    padding: 4px 10px 4px 6px;
+    gap: 4px;
+  }
+
+  .etiquette-icone {
+    width: 16px;
+    height: 16px;
+  }
 }
