@@ -1,6 +1,6 @@
 # Orbite — état du projet
 
-Dernière mise à jour : 10 novembre 2026, session 3 (harnais de vérification ; aucune étape du produit avancée).
+Dernière mise à jour : 10 novembre 2026, fin de session 3 (harnais de vérification ; aucune étape du produit avancée).
 
 ## Le plan en 8 étapes
 
@@ -23,9 +23,17 @@ Dernière mise à jour : 10 novembre 2026, session 3 (harnais de vérification ;
   branche principale (règle « Protection branche principale » : pull request obligatoire, vérification `verifier`
   obligatoire, pas de push forcé ni de suppression, 0 approbation requise) et activé la protection GitHub contre
   les secrets. Le blocage réel du bouton « Merge » sera constaté à la prochaine pull request.
-- En attente : ses mesures de l'étape 6 sur iPhone 15 et S10 Lite (img/s pendant « Changer de décor »,
-  confort du bouton, décors vus). Lien donné : `?fps&v=12`.
-- Prochaine étape : 7 (créatures). Présenter le plan et attendre son accord avant de coder.
+- Mesure étape 6 reçue pour la tablette (voir plus bas). **En attente : la mesure de l'iPhone 15** (`?fps&v=12`,
+  img/s en touchant « Changer de décor » plusieurs fois).
+- **Prochaine étape : 7 (créatures).** Plan déjà présenté en fin de session 3, **choix pas encore fait** :
+  - A (recommandée) : une même petite bestiole ronde, couleur de sa planète, avec un accessoire différent par
+    planète (appareil photo, casque audio, bonnet, petite valise…) — plus légère, plus rapide, style cohérent ;
+  - B : un animal différent par planète — plus de personnalité, ~2x plus de travail, un peu plus lourd.
+  Dans les deux cas : une par île, petit saut ou tête qui tourne toutes les quelques secondes (rythmes
+  décalés) ; retirées **en premier** par le mode allégé (avant la baisse de finesse) ; immobiles avec « réduire
+  les animations » ; vérification ajoutée au test (5 présentes, bougent, disparaissent en mode allégé).
+- À la prochaine pull request : dire à la personne de l'ouvrir dans la minute pour constater que « Merge » est
+  bloqué tant que `verifier` tourne (jamais vu jusqu'ici). Auditeur du harnais : vers le 10 décembre 2026.
 
 ## Mesures faites sur les vrais appareils
 
@@ -33,6 +41,7 @@ Dernière mise à jour : 10 novembre 2026, session 3 (harnais de vérification ;
 - **Tablette Samsung S10 Lite (Chrome)** : 60-67 img/s à l'étape 1 ; tombée à **24 img/s** à l'étape 4 ;
   remontée à **80-89 img/s** après avoir retiré le flou `backdrop-filter`, plafonné la résolution et rendu le
   canvas opaque. Le mode allégé automatique n'a donc pas eu à agir sur elle.
+  Étapes 5-6 (10/11/2026, `v=12`) : **90 img/s constant** ; **83 img/s** en touchant « Changer de décor » à répétition.
 - Rien n'a encore été mesuré sur un vrai « vieux » téléphone.
 
 ## Comment c'est construit (fichiers)
