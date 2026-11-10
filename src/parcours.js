@@ -51,3 +51,11 @@ export function voisinDans(liste, index, sens) {
   if (pos < 0) return sens > 0 ? liste[0] : liste.at(-1);
   return liste[voisin(liste.length, pos, sens)];
 }
+
+// « Surprends-moi » : un système au hasard, jamais celui où l'on est déjà (s'il y en a un autre).
+// alea : une fonction qui donne un nombre entre 0 et 1 (Math.random ; fixée dans les tests).
+export function auHasard(nombre, index, alea = Math.random) {
+  if (nombre <= 1) return index;
+  const k = Math.min(nombre - 2, Math.floor(alea() * (nombre - 1)));
+  return k >= index ? k + 1 : k;
+}

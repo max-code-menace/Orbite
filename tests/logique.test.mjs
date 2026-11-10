@@ -179,3 +179,104 @@ test("suivant / précédent restent dans le thème, font le tour, et entrent par
   assert.equal(voisinDans([3], 3, 1), 3); // un seul système : on reste
   assert.equal(voisinDans([], 2, 1), 2);
 });
+
+// --- « Fais le tien » : le message préparé et les liens acceptés ---
+import { construireMessage, lienValide } from '../src/faistien.js';
+
+test('« Fais le tien » : seuls les liens https:// bien formés sont acceptés', () => {
+  assert.equal(lienValide('https://exemple.fr/moi'), true);
+  for (const mauvais of [
+    'http://exemple.fr',
+    'javascript:alert(1)',
+    'exemple.fr',
+    'https://',
+    'https://a b.fr',
+    '',
+    null,
+  ]) {
+    assert.equal(lienValide(mauvais), false, String(mauvais));
+  }
+  assert.equal(lienValide(`https://exemple.fr/${'a'.repeat(300)}`), false);
+});
+
+test('« Fais le tien » : le message contient nom, bio, thème et liens', () => {
+  const r = construireMessage({ nom: ' Ana ', bio: 'Salut', theme: 'Musique', liens: ['https://exemple.fr/a', ''] });
+  assert.match(r.texte, /Nom : Ana/);
+  assert.match(r.texte, /Bio : Salut/);
+  assert.match(r.texte, /Thème : Musique/);
+  assert.match(r.texte, /- https:\/\/exemple\.fr\/a/);
+});
+
+test('« Fais le tien » : refuse nom vide, trop long, pas de lien, lien faux, trop de liens', () => {
+  const ok = { nom: 'Ana', bio: '', theme: '', liens: ['https://exemple.fr'] };
+  assert.ok(construireMessage(ok).texte);
+  assert.ok(construireMessage({ ...ok, nom: '  ' }).erreur);
+  assert.ok(construireMessage({ ...ok, nom: 'x'.repeat(41) }).erreur);
+  assert.ok(construireMessage({ ...ok, bio: 'x'.repeat(81) }).erreur);
+  assert.ok(construireMessage({ ...ok, liens: ['', ' '] }).erreur);
+  assert.ok(construireMessage({ ...ok, liens: ['http://non.fr'] }).erreur);
+  assert.ok(construireMessage({ ...ok, liens: Array(6).fill('https://exemple.fr') }).erreur);
+});
+
+// --- Favoris, recherche, « Surprends-moi » ---
+import { basculer, enregistrerFavoris, lireFavoris } from '../src/favoris.js';
+import { chercher } from '../src/recherche.js';
+import { auHasard } from '../src/parcours.js';
+
+test('favoris : ajouter puis retirer, et lecture robuste du stockage', () => {
+  assert.deepEqual(basculer(['a'], 'b'), ['a', 'b']);
+  assert.deepEqual(basculer(['a', 'b'], 'a'), ['b']);
+  const faux = (valeur) => ({ getItem: () => valeur, setItem() {} });
+  assert.deepEqual(lireFavoris(faux(null)), []);
+  assert.deepEqual(lireFavoris(faux('pas du json{')), []);
+  assert.deepEqual(lireFavoris(faux('{"a":1}')), []);
+  assert.deepEqual(lireFavoris(faux('["a",3,"b"]')), ['a', 'b']);
+  assert.deepEqual(
+    lireFavoris({
+      getItem: () => {
+        throw new Error('bloqué');
+      },
+    }),
+    [],
+  );
+  enregistrerFavoris(['a'], {
+    setItem: () => {
+      throw new Error('plein');
+    },
+  }); // ne doit pas lever
+});
+
+test('recherche : sans accents ni majuscules, plusieurs mots, thème, favoris', () => {
+  const sys = [
+    { id: 'a', theme: 'musique', profil: { nom: 'Chloé Durand', pseudo: '@chloe', bio: 'DJ' } },
+    { id: 'b', theme: 'cuisine', profil: { nom: 'Noé Ferrand', pseudo: '@noe', bio: 'Pâtisserie' } },
+  ];
+  const themes = [
+    { id: 'musique', nom: 'Musique' },
+    { id: 'cuisine', nom: 'Cuisine' },
+  ];
+  assert.deepEqual(chercher(sys, '', themes), [0, 1]);
+  assert.deepEqual(chercher(sys, 'CHLOE', themes), [0]);
+  assert.deepEqual(chercher(sys, 'patisserie noe', themes), [1]);
+  assert.deepEqual(chercher(sys, 'musique', themes), [0]);
+  assert.deepEqual(chercher(sys, 'zzz', themes), []);
+  assert.deepEqual(chercher(sys, '', themes, ['b']), [1]);
+});
+
+test('« Surprends-moi » : jamais le système actuel, tous les autres possibles', () => {
+  for (let index = 0; index < 4; index++) {
+    const vus = new Set();
+    for (let k = 0; k < 40; k++) {
+      const r = auHasard(4, index, () => k / 40);
+      assert.notEqual(r, index);
+      assert.ok(r >= 0 && r < 4);
+      vus.add(r);
+    }
+    assert.equal(vus.size, 3);
+  }
+  assert.equal(auHasard(1, 0), 0);
+  assert.notEqual(
+    auHasard(2, 0, () => 0.999999),
+    0,
+  );
+});

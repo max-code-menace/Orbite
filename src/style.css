@@ -644,7 +644,8 @@ body.focus .etiquette {
 }
 
 /* Les pastilles de thèmes : plus sobres que les amis ; celle du thème choisi est colorée. */
-.theme {
+.theme,
+.puce {
   flex: none;
   height: 40px;
   padding: 0 14px;
@@ -658,7 +659,8 @@ body.focus .etiquette {
   cursor: pointer;
 }
 
-.theme.actif {
+.theme.actif,
+.puce.actif {
   background: linear-gradient(135deg, #c86bff, #5a8cff);
   border-color: transparent;
 }
@@ -684,5 +686,314 @@ body.focus #amis {
 @media (prefers-reduced-motion: reduce) {
   #amis {
     transition-duration: 0.01s;
+  }
+}
+
+/* --- « Fais le tien » : bouton dans le profil + petite feuille de formulaire ------- */
+.feuille {
+  position: fixed;
+  left: 50%;
+  top: calc(env(safe-area-inset-top) + 12px);
+  transform: translateX(-50%);
+  width: min(calc(100% - 24px), 480px);
+  max-height: calc(100% - env(safe-area-inset-top) - 24px);
+  overflow-y: auto;
+  padding: 14px;
+  border-radius: 22px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feuille[hidden] {
+  display: none;
+}
+
+.ft-entete {
+  position: sticky; /* le ✕ reste visible quand la feuille défile (tablette) */
+  top: -14px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: -14px -14px 0;
+  padding: 14px 14px 6px;
+  background: #2a1552;
+  border-radius: 22px 22px 0 0;
+}
+
+.ft-titre {
+  margin: 0;
+  font-size: 18px;
+}
+
+.ft-champ {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ft-libelle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #d8c4ff;
+}
+
+.feuille input,
+.feuille select,
+.feuille textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(200, 160, 255, 0.4);
+  background: rgba(20, 8, 44, 0.9);
+  color: inherit;
+  font: inherit;
+  font-size: 16px; /* 16 px : Safari ne zoome pas la page quand on touche un champ */
+}
+
+.ft-bouton {
+  min-height: 44px;
+  border-radius: 999px;
+  border: 0;
+  background: linear-gradient(135deg, #c86bff, #5a8cff);
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ft-erreur {
+  margin: 0;
+  min-height: 1em;
+  font-size: 14px;
+  color: #ffd1a8;
+}
+
+.ft-note {
+  margin: 0;
+  font-size: 13px;
+  color: #d8c4ff;
+}
+
+/* Feuille ouverte : le reste (profil, bande, Accès rapide) s'efface derrière. */
+body.ft-ouvert #profil,
+body.ft-ouvert #amis,
+body.ft-ouvert #acces {
+  visibility: hidden;
+}
+
+.ft-fermer {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Le message préparé garde sa hauteur (sinon la feuille qui défile l'écrase). */
+.ft-sortie {
+  flex: none;
+  min-height: 150px;
+}
+
+/* --- Boutons du profil (♥ et ☰) --------------------------------------------- */
+.profil-boutons {
+  flex: none;
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.profil-bouton {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 160, 255, 0.45);
+  background: rgba(30, 14, 60, 0.92);
+  color: inherit;
+  font: inherit;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.profil-bouton.coeur[aria-pressed="true"] {
+  color: #ff6b9a;
+  border-color: #ff6b9a;
+}
+
+/* --- Le menu --------------------------------------------------------------- */
+.menu-puces,
+.menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-puces {
+  flex-direction: row;
+}
+
+.menu-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 34vh;
+  overflow-y: auto;
+}
+
+.menu-ligne {
+  flex: none;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(200, 160, 255, 0.3);
+  background: rgba(30, 14, 60, 0.92);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-textes {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-nom {
+  font-weight: 700;
+}
+
+.menu-sous {
+  font-size: 13px;
+  color: #d8c4ff;
+}
+
+.menu-coeur {
+  color: #ff6b9a;
+}
+
+/* --- L'écran d'accueil ------------------------------------------------------ */
+#accueil {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(13, 8, 32, 0.86);
+}
+
+#accueil[hidden] {
+  display: none;
+}
+
+.accueil-carte {
+  width: min(100%, 360px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+}
+
+.accueil-titre {
+  margin: 0;
+  font-size: 44px;
+  letter-spacing: 0.04em;
+}
+
+.accueil-texte {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #ece4ff;
+}
+
+.accueil-lien {
+  min-height: 44px;
+  border: 0;
+  background: none;
+  color: #d8c4ff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* --- La traversée « Direction la galaxie… » : traits de lumière qui filent + texte ------- */
+#traversee {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  pointer-events: none; /* on peut toucher à travers */
+  animation: traversee-fondu 1.1s ease-in-out both;
+}
+
+#traversee[hidden] {
+  display: none;
+}
+
+.traversee-traits {
+  position: absolute;
+  inset: 0;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(200, 160, 255, 0.55) 0deg 0.6deg,
+    transparent 0.6deg 9deg
+  );
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 8%, #000 70%);
+  mask-image: radial-gradient(circle at 50% 50%, transparent 8%, #000 70%);
+  animation: traversee-zoom 1.1s ease-in both;
+}
+
+.traversee-texte {
+  position: relative;
+  margin: 0;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(20, 8, 44, 0.85);
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+}
+
+@keyframes traversee-fondu {
+  0% {
+    opacity: 0;
+  }
+  20%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes traversee-zoom {
+  from {
+    transform: scale(0.6);
+  }
+  to {
+    transform: scale(2.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #traversee,
+  .traversee-traits {
+    animation: none;
   }
 }
