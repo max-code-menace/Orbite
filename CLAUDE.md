@@ -18,6 +18,18 @@ La personne n'est pas développeuse. Elle teste sur un iPhone 15 et une tablette
 - À la fin de chaque étape, dis-lui exactement : quel lien ouvrir (avec `?fps&v=N`, N augmenté à chaque fois,
   pour contourner le cache du navigateur), quoi regarder, quoi mesurer.
 
+## Le récap de fin d'étape (demandé par la personne)
+
+Quand une étape (ou une tâche) est finie, termine **toujours** par un récap **court et précis**, écrit pour un
+débutant : 15 lignes au plus, sans jargon. Toujours dans cet ordre :
+
+1. **En une phrase** : ce qui a changé, tel qu'on le voit à l'écran.
+2. **Un petit schéma** (dessiné avec du texte) quand ça aide à comprendre : un avant/après, un enchaînement.
+3. **✅ Vérifié** et **❓ Pas vérifié** : 2 ou 3 points chacun, les plus importants.
+4. **👉 À vous** : ce que la personne doit faire (fusionner, ouvrir tel lien, regarder telle chose, mesurer tel chiffre).
+
+Les détails viennent ensuite, seulement s'ils sont utiles, et clairement séparés du récap.
+
 ## Développement honnête
 
 - **Ne dis jamais « ça marche » sans preuve.** La preuve, c'est : `npm run verifier` qui passe, et les captures
