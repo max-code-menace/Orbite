@@ -10,7 +10,7 @@ const cas = [
   [['src/decors.js'], 1],
   [['src/style.css', 'docs/ETAT.md'], 1],
   [['tests/logique.test.mjs'], 1],
-  [['public/systeme.json'], 2],
+  [['public/galaxie.json'], 2],
   [['src/ui.js'], 2],
   [['package.json'], 2],
   [['package-lock.json'], 2],

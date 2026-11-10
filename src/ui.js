@@ -2,7 +2,7 @@ import { icons } from './icons.js';
 import { themes } from './planets.js';
 
 // Petit raccourci pour créer un élément HTML avec une classe et un texte.
-// (Le texte passe par textContent : ce qui est écrit dans systeme.json
+// (Le texte passe par textContent : ce qui est écrit dans galaxie.json
 // s'affiche tel quel, sans jamais être interprété comme du code.)
 function el(tag, className, text) {
   const e = document.createElement(tag);

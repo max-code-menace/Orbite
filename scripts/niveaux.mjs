@@ -3,7 +3,7 @@
 // Zones sensibles : données de la personne, affichage des liens, dépendances,
 // mise en ligne, réglages et garde-fous eux-mêmes.
 export const SENSIBLES = [
-  /^public\/systeme\.json$/,
+  /^public\/galaxie\.json$/,
   /^src\/ui\.js$/,
   /^scripts\/(donnees|verifier-donnees|check|niveaux)\.mjs$/,
   /^scripts\/hooks\//,

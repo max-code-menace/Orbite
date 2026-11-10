@@ -39,7 +39,7 @@ lien à ouvrir (`?fps&v=N`, N augmenté à chaque fois), quoi regarder, quoi mes
 
 ## Zones sensibles (niveau 2)
 
-`public/systeme.json` (données publiques de la personne), `src/ui.js` (affichage des liens), `package*.json`
+`public/galaxie.json` (données publiques : les systèmes), `src/ui.js` (affichage des liens), `package*.json`
 (dépendances), `.github/` (mise en ligne), `.claude/`, `.githooks/`, `scripts/hooks/`, `scripts/check.mjs`,
 `scripts/niveaux.mjs`, `scripts/verifier-donnees.mjs`.
 
@@ -52,7 +52,7 @@ pas de grande réécriture non demandée.
 
 ## Règles techniques (celles marquées 🤖 sont vérifiées par `npm test`)
 
-- Données dans `public/systeme.json` seulement 🤖 ; texte des données via `textContent`, jamais `innerHTML` 🤖.
+- Données dans `public/galaxie.json` seulement 🤖 ; texte des données via `textContent`, jamais `innerHTML` 🤖.
 - Pas de vrais logos : icônes maison (`src/icons.js`) et nom écrit en clair.
 - Fluidité : 60 img/s iPhone 15, ≥ 30 vieux téléphone. Pas de `backdrop-filter` 🤖. Pièces fixes fusionnées
   (`Assemblage`, `src/decors.js`) ; seules les pièces qui bougent sont à part ; `InstancedMesh` pour les répétitions. Budget de pixels et paliers

@@ -2,14 +2,45 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { verifierDonnees } from '../scripts/donnees.mjs';
+import { verifierDonnees, verifierGalaxie } from '../scripts/donnees.mjs';
 
-const vraies = JSON.parse(readFileSync(new URL('../public/systeme.json', import.meta.url), 'utf8'));
+const galaxie = JSON.parse(readFileSync(new URL('../public/galaxie.json', import.meta.url), 'utf8'));
+const vraies = galaxie.systemes[0];
 const copie = () => structuredClone(vraies);
 
-test('le vrai fichier systeme.json est valide', () => {
-  assert.deepEqual(verifierDonnees(vraies), []);
+test('le vrai fichier galaxie.json est valide', () => {
+  assert.deepEqual(verifierGalaxie(galaxie), []);
 });
+
+test('la galaxie contient plusieurs systèmes (étape G1)', () => {
+  assert.ok(galaxie.systemes.length >= 10, `${galaxie.systemes.length} systèmes seulement`);
+});
+
+const galaxieRefusee = {
+  'liste des systèmes vide': (g) => {
+    g.systemes = [];
+  },
+  'id de système en double': (g) => {
+    g.systemes[1].id = g.systemes[0].id;
+  },
+  'id de système avec majuscule ou espace (inutilisable dans une adresse)': (g) => {
+    g.systemes[0].id = 'Luna Martin';
+  },
+  'id de système fait seulement de tirets': (g) => {
+    g.systemes[0].id = '---';
+  },
+  'un lien piège dans un autre système que le premier': (g) => {
+    g.systemes.at(-1).planetes[0].liens[0].url = 'javascript:alert(1)';
+  },
+};
+
+for (const [nom, abimer] of Object.entries(galaxieRefusee)) {
+  test(`galaxie refusée : ${nom}`, () => {
+    const g = structuredClone(galaxie);
+    abimer(g);
+    assert.ok(verifierGalaxie(g).length > 0);
+  });
+}
 
 const casRefuses = {
   'nom du profil vide': (d) => {

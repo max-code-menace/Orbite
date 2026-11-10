@@ -1,6 +1,6 @@
 ---
 name: securite
-description: Contrôle de sécurité d'Orbite, seulement quand une zone sensible a changé (niveau 2, signalé par npm run check) et avant fusion (niveau 3). Zones sensibles : données de la personne (public/systeme.json), affichage des liens (src/ui.js), dépendances, mise en ligne (.github/), réglages et garde-fous (.claude/, .githooks/, scripts/check.mjs). Il ne modifie rien.
+description: Contrôle de sécurité d'Orbite, seulement quand une zone sensible a changé (niveau 2, signalé par npm run check) et avant fusion (niveau 3). Zones sensibles : données des systèmes (public/galaxie.json), affichage des liens (src/ui.js), dépendances, mise en ligne (.github/), réglages et garde-fous (.claude/, .githooks/, scripts/check.mjs). Il ne modifie rien.
 tools: Read, Grep, Glob, Bash
 ---
 
@@ -16,7 +16,7 @@ uniquement, pas de `innerHTML` avec les données, versions fixées. Si besoin, c
 
 1. Liste les fichiers sensibles modifiés : `git diff --name-only origin/ccr-be406ff5-wxbiv4...HEAD` et `git status`.
 2. Pour chacun, lis le changement et juge :
-   - **Données** (`public/systeme.json`) : le dépôt et la page sont **publics**. Y a-t-il une donnée qui ne devrait pas
+   - **Données** (`public/galaxie.json`) : le dépôt et la page sont **publics**. Y a-t-il une donnée qui ne devrait pas
      l'être (téléphone, adresse, e-mail privé, nom d'un tiers) ? Un lien qui ressemble à du hameçonnage ou à une
      faute de frappe d'un site connu ?
    - **Affichage** (`src/ui.js` et ce qui lit les données) : le texte des données passe-t-il toujours par
