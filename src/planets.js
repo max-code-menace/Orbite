@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { icons } from './icons.js';
-import { creerDecor, decorsLibres, typesLibres } from './decors.js';
+import { creerDecor, decorsLibres, tirerAutreType, typesLibres } from './decors.js';
 
 // Les couleurs de chaque planète (le style reste dans le code,
 // le nom et les liens sont dans systeme.json).
@@ -236,8 +236,7 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
   function changerDecor(index, instantane = false) {
     const p = planetes[index];
     if (!p?.typeLibre || p.pop) return null; // pas une planète libre, ou animation déjà en cours
-    const autres = typesLibres.filter((t) => t !== p.typeLibre);
-    p.typeLibre = autres[Math.floor(Math.random() * autres.length)];
+    p.typeLibre = tirerAutreType(p.typeLibre);
     p.theme = decorsLibres[p.typeLibre].couleurs;
     if (instantane) habiller(p);
     else p.pop = { debut: performance.now(), habillee: false };

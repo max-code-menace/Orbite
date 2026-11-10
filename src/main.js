@@ -1,27 +1,20 @@
 import * as THREE from 'three';
 import { createStars, createAsteroids } from './sky.js';
 import { createSun } from './sun.js';
+import { PALIERS, calculerRatio, palierApres } from './fluidite.js';
 import { creerPlanetes } from './planets.js';
 import { remplirProfil, creerAccesRapide, creerPanneau, ecranLarge } from './ui.js';
 
 const container = document.getElementById('scene');
 
 // --- Le moteur de dessin -------------------------------------------------
-// Résolution limitée : au plus 2x, et au plus ~2,2 millions de points dessinés
-// à chaque image. Au-delà, l'œil ne voit pas la différence mais le téléphone
-// (surtout une tablette, avec son grand écran) rame et chauffe.
-const BUDGET_PIXELS = 2.2e6;
-// Mode allégé automatique : si l'appareil n'arrive pas à suivre, on dessine
-// moins finement, palier par palier (1 = finesse normale).
-const PALIERS = [1, 0.8, 0.65, 0.5];
+// Résolution plafonnée (BUDGET_PIXELS) et mode allégé (PALIERS) : voir fluidite.js.
 const paramQualite = Number(new URLSearchParams(window.location.search).get('qualite'));
 let palier = paramQualite >= 1 && paramQualite <= PALIERS.length ? paramQualite - 1 : 0;
 const palierForce = paramQualite >= 1;
 
 function calculerPixelRatio() {
-  const ecran = window.innerWidth * window.innerHeight;
-  const normal = Math.max(1, Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(BUDGET_PIXELS / ecran)));
-  return Math.max(0.6, normal * PALIERS[palier]);
+  return calculerRatio(window.innerWidth, window.innerHeight, window.devicePixelRatio, palier);
 }
 let pixelRatio = calculerPixelRatio();
 
@@ -228,8 +221,9 @@ function surveillerFluidite() {
   const duree = now - mesure.debut;
   if (duree < 2000) return;
   const ips = (mesure.images * 1000) / duree;
-  if (ips < 50) {
-    palier++;
+  const suivant = palierApres(palier, ips);
+  if (suivant !== palier) {
+    palier = suivant;
     resize();
     remettreMesure(1000);
   } else {

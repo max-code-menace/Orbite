@@ -362,6 +362,13 @@ export const decorsLibres = {
 
 export const typesLibres = Object.keys(decorsLibres);
 
+// Tire un type de décor libre toujours différent de l'actuel
+// (sinon on croirait que le bouton « Changer de décor » ne marche pas).
+export function tirerAutreType(actuel, hasard = Math.random) {
+  const autres = typesLibres.filter((t) => t !== actuel);
+  return autres[Math.floor(hasard() * autres.length)];
+}
+
 function decorLibre(type) {
   const a = new Assemblage();
   decorsLibres[type].construire(a);
