@@ -15,6 +15,14 @@ Dernière mise à jour : 10 novembre 2026, après l'étape 6.
 | 7 | Petites créatures décoratives (facultatives, à retirer en premier si ça rame) | ⏳ à faire |
 | 8 | Derniers réglages de fluidité + checklist des critères de réussite du brief | ⏳ à faire |
 
+## Où on s'est arrêté (fin de session 2)
+
+- Pull request n°1 (étape 6 + règle du récap de fin d'étape dans CLAUDE.md) : **ouverte, à fusionner par la personne**.
+  Vérification GitHub réussie.
+- En attente : ses mesures de l'étape 6 sur iPhone 15 et S10 Lite (img/s pendant « Changer de décor »,
+  confort du bouton, décors vus). Lien donné : `?fps&v=11`.
+- Prochaine étape : 7 (créatures). Présenter le plan et attendre son accord avant de coder.
+
 ## Mesures faites sur les vrais appareils
 
 - **iPhone 15 (Safari)** : 60 img/s constant, au repos comme pendant le rapprochement (après l'étape 4).
