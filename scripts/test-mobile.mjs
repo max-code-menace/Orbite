@@ -55,13 +55,19 @@ for (const { nom, options } of appareils) {
   verifier(Array.isArray(avant) && avant.length === 5, "l'état des planètes est lisible");
   for (const p of avant ?? []) verifier(p.sommetsDecor > 50, `l'île ${p.id} a un décor (${p.sommetsDecor} sommets)`);
   const libre = (avant ?? []).find((p) => p.id === 'libre');
-  verifier(['foret', 'cristaux', 'champignons', 'glace', 'volcan'].includes(libre?.typeLibre), `la planète libre a un décor tiré au hasard (${libre?.typeLibre})`);
+  verifier(
+    ['foret', 'cristaux', 'champignons', 'glace', 'volcan'].includes(libre?.typeLibre),
+    `la planète libre a un décor tiré au hasard (${libre?.typeLibre})`,
+  );
   await page.waitForTimeout(700);
   const apres = await page.evaluate(() => window.orbite.planetes());
   for (const id of ['spotify', 'voyage']) {
     const a = avant.find((p) => p.id === id)?.signature;
     const b = apres.find((p) => p.id === id)?.signature;
-    verifier(a != null && b != null && a !== b, `les pièces animées de ${id} bougent (${id === 'spotify' ? "barres d'égaliseur" : 'avion'})`);
+    verifier(
+      a != null && b != null && a !== b,
+      `les pièces animées de ${id} bougent (${id === 'spotify' ? "barres d'égaliseur" : 'avion'})`,
+    );
   }
 
   // Toucher une planète (par son étiquette) ouvre son panneau.
@@ -73,9 +79,12 @@ for (const { nom, options } of appareils) {
   verifier((await page.locator('.panneau-lien').count()) >= 1, 'le panneau contient des liens');
   const panneau = await page.locator('#panneau').boundingBox();
   const hauteur = page.viewportSize().height;
-  verifier(panneau && panneau.height <= hauteur * 0.6 + 1, "le panneau ne couvre pas plus d'environ la moitié de l'écran");
+  verifier(
+    panneau && panneau.height <= hauteur * 0.6 + 1,
+    "le panneau ne couvre pas plus d'environ la moitié de l'écran",
+  );
 
-  verifier(await page.locator('.panneau-changer').isHidden(), "pas de bouton « Changer de décor » sur Spotify");
+  verifier(await page.locator('.panneau-changer').isHidden(), 'pas de bouton « Changer de décor » sur Spotify');
 
   // La croix referme le panneau.
   await page.locator('.panneau-fermer').click();
@@ -89,9 +98,15 @@ for (const { nom, options } of appareils) {
   const bouton = page.locator('.panneau-changer');
   verifier(await bouton.isVisible(), 'le panneau de la planète libre a le bouton « Changer de décor »');
   const bb = await bouton.boundingBox();
-  verifier(bb && bb.height >= 44, `le bouton est assez grand pour le pouce (${bb ? Math.round(bb.height) : '?'} px de haut)`);
+  verifier(
+    bb && bb.height >= 44,
+    `le bouton est assez grand pour le pouce (${bb ? Math.round(bb.height) : '?'} px de haut)`,
+  );
   const panneauLibre = await page.locator('#panneau').boundingBox();
-  verifier(panneauLibre && panneauLibre.height <= hauteur * 0.6 + 1, "avec le bouton, le panneau ne couvre toujours pas plus d'environ la moitié de l'écran");
+  verifier(
+    panneauLibre && panneauLibre.height <= hauteur * 0.6 + 1,
+    "avec le bouton, le panneau ne couvre toujours pas plus d'environ la moitié de l'écran",
+  );
   await page.screenshot({ path: `${DOSSIER}/${nom}-3-planete-libre.png` });
 
   const l0 = await etatLibre();
@@ -110,7 +125,10 @@ for (const { nom, options } of appareils) {
   const l1 = await etatLibre();
   const tailleMin = await page.evaluate(() => window.__tailleMin);
   verifier(l1.typeLibre !== l0.typeLibre, `toucher le bouton change le décor (${l0.typeLibre} → ${l1.typeLibre})`);
-  verifier(l1.couleurAnneau !== l0.couleurAnneau, `les couleurs changent aussi (anneau ${l0.couleurAnneau} → ${l1.couleurAnneau})`);
+  verifier(
+    l1.couleurAnneau !== l0.couleurAnneau,
+    `les couleurs changent aussi (anneau ${l0.couleurAnneau} → ${l1.couleurAnneau})`,
+  );
   verifier(l1.sommetsDecor > 50, `le nouveau décor est bien posé sur l'île (${l1.sommetsDecor} sommets)`);
   verifier(tailleMin < 0.6, `l'île fait sa petite animation (taille la plus petite : ${tailleMin.toFixed(2)})`);
   verifier(Math.abs(l1.echelleIle - 1) < 0.001, "l'île retrouve sa taille normale après l'animation");
@@ -126,7 +144,7 @@ for (const { nom, options } of appareils) {
   await page.locator('.panneau-fermer').click();
   await page.waitForTimeout(800);
 
-  verifier(erreurs.length === 0, `aucune erreur dans la page${erreurs.length ? ' : ' + erreurs.join(' | ') : ''}`);
+  verifier(erreurs.length === 0, `aucune erreur dans la page${erreurs.length ? ` : ${erreurs.join(' | ')}` : ''}`);
   await page.close();
 }
 

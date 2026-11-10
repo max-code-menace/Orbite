@@ -1,69 +1,61 @@
 # Orbite — règles du projet
 
-Ce fichier est lu au début de chaque session. Il passe avant les habitudes par défaut.
+Lis d'abord `docs/BRIEF.md` (ce qu'on construit) et `docs/ETAT.md` (où on en est). Mets `ETAT.md` à jour à
+chaque étape finie. Le harnais (vérifications, temps, risques) est décrit dans `docs/HARNAIS.md`.
 
-## À lire en premier
+## La personne
 
-1. `docs/BRIEF.md` : ce qu'on construit (prototype 1) et les critères de réussite.
-2. `docs/ETAT.md` : où on en est, ce qui a été décidé et pourquoi, ce qui reste à faire.
+Pas développeuse ; teste sur iPhone 15 et tablette Samsung S10 Lite. Français simple, jargon expliqué.
+Une étape à la fois : dis ce que tu vas faire, attends son accord. Pour une décision : 2-3 options max,
+ta recommandation et ses conséquences.
 
-Mets `docs/ETAT.md` à jour à la fin de chaque étape terminée.
+**Récap de fin d'étape** (15 lignes max, pour un débutant, dans cet ordre) : 1. en une phrase, ce qui change à
+l'écran ; 2. un petit schéma texte si utile ; 3. ✅ Vérifié / ❓ Pas vérifié (2-3 points chacun) ; 4. 👉 À vous :
+lien à ouvrir (`?fps&v=N`, N augmenté à chaque fois), quoi regarder, quoi mesurer, quoi fusionner. Détails après.
 
-## Avec qui on travaille
+## Honnêteté
 
-La personne n'est pas développeuse. Elle teste sur un iPhone 15 et une tablette Samsung S10 Lite.
+- Jamais « ça marche » sans preuve : `npm run verifier` qui passe + captures de `test-resultats/` regardées.
+  Cite ce que tu as vérifié.
+- Sépare vérifié / pas vérifié. Fluidité réelle, pouce, chaleur, plein soleil, Safari : seulement sur ses appareils.
+- Une correction non reproduite est une piste, pas une solution. Aucun chiffre inventé. Un échec s'annonce.
+- Ne lui demande pas ce que tu peux faire toi-même. Ce qu'elle seule peut faire (réglages GitHub, fusion) :
+  dis-le avec le chemin exact.
 
-- Parle en français, avec des mots simples. Explique chaque étape sans jargon (ou explique le jargon).
-- Une étape à la fois. Avant de coder une étape : dis ce que tu vas faire, et attends son accord.
-- À la fin de chaque étape, dis-lui exactement : quel lien ouvrir (avec `?fps&v=N`, N augmenté à chaque fois,
-  pour contourner le cache du navigateur), quoi regarder, quoi mesurer.
+## Commandes
 
-## Développement honnête
+| Commande | Quand |
+|---|---|
+| `npm run check` | Choisit le niveau seul (0 docs, 1 code, 2 zone sensible). Lancé aussi par le hook de fin de tâche. |
+| `npm run verifier` | Test complet téléphone + tablette (~30 s). **Avant chaque commit.** |
+| `npm run check -- --ci` | Niveau 3 : tout. C'est ce que lance GitHub ; rien n'est mis en ligne s'il échoue. |
+| `npm test` / `npm run lint` / `npm run format` | Tests rapides (< 1 s) / linter / mise en forme. |
 
-- **Ne dis jamais « ça marche » sans preuve.** La preuve, c'est : `npm run verifier` qui passe, et les captures
-  d'écran de `test-resultats/` que tu as regardées. Cite ce que tu as vérifié.
-- **Sépare toujours « vérifié » et « pas vérifié ».** Ici on n'a pas de vrai téléphone : la fluidité réelle
-  (images par seconde), le toucher au pouce, la chaleur, la lisibilité en plein soleil ne se vérifient que sur
-  ses appareils. Dis-le, et demande-lui de mesurer.
-- **Une hypothèse est une hypothèse.** Si tu corriges un problème sans pouvoir le reproduire (ex. une lenteur
-  sur la tablette), présente la correction comme une piste et demande une mesure avant de la déclarer réglée.
-- **N'invente aucun chiffre** (performances, prix, délais, statistiques). Si tu ne sais pas, dis-le.
-- **Dis-le quand c'est raté.** Un test qui échoue, une étape sautée, un compromis : on l'annonce, on ne le cache pas.
-- **Ne lui demande pas de faire ce que tu peux faire toi-même.** Mais quand une action ne peut être faite que par
-  elle (réglages GitHub, fusion d'une pull request), dis-le clairement, avec le chemin exact à suivre.
+- Ne désactive, n'affaiblis ni ne contourne jamais une vérification : corrige le code.
+- Nouvelle fonctionnalité = nouvelle vérification (`tests/` si possible sans navigateur, sinon `scripts/test-mobile.mjs`).
+- **Niveau 2** (zone sensible) → agent `securite`. **Avant d'annoncer une étape finie** → agent `relecteur` ;
+  s'il dit PAS PRÊT, corrige ; transmets-lui honnêtement ce qu'il signale « non vérifié ». `auditeur-harness` : une fois par mois ou à sa demande.
+- Après chaque envoi, vérifie le résultat sur GitHub Actions et annonce-le.
 
-## Les harnais (garde-fous)
+## Zones sensibles (niveau 2)
 
-- `npm run verifier` = vérification de `public/systeme.json` + construction + test automatique sur téléphone et
-  tablette (Playwright). **Il doit passer avant chaque commit.** Regarde ensuite les captures dans `test-resultats/`.
-- **Ne désactive, n'affaiblis et ne contourne jamais un test pour le faire passer.** Corrige le code.
-- **Une fonctionnalité nouvelle = une vérification nouvelle** dans `scripts/test-mobile.mjs`
-  (ex. le bouton « Changer de décor » change bien le décor).
-- **Avant d'annoncer qu'une étape est terminée**, lance l'agent `relecteur` (`.claude/agents/relecteur.md`) en lui
-  donnant ce que tu comptes annoncer. S'il répond PAS PRÊT, corrige d'abord. Transmets honnêtement à la personne
-  ce qu'il signale comme « non vérifié ».
-- Le même `npm run verifier` tourne sur GitHub à chaque envoi (`.github/workflows/deploy.yml`). Si un test échoue,
-  rien n'est mis en ligne. **Après chaque envoi, vérifie le résultat sur GitHub Actions** et annonce-le.
+`public/systeme.json` (données publiques de la personne), `src/ui.js` (affichage des liens), `package*.json`
+(dépendances), `.github/` (mise en ligne), `.claude/`, `.githooks/`, `scripts/hooks/`, `scripts/check.mjs`,
+`scripts/niveaux.mjs`, `scripts/verifier-donnees.mjs`.
 
 ## Git et mise en ligne
 
-- La page en ligne : https://max-code-menace.github.io/Orbite/
-- Elle est mise en ligne **uniquement depuis la branche principale** du dépôt (`ccr-be406ff5-wxbiv4`).
-- Travaille sur la branche de ta session. Une étape terminée et vérifiée = une pull request vers la branche
-  principale. La personne la fusionne (bouton « Merge » sur GitHub) ; la mise en ligne suit automatiquement.
-- Petits commits, messages clairs en français, qui disent quoi et pourquoi.
-- Ne touche pas aux fichiers qui n'ont rien à voir avec l'étape en cours. Pas de grande réécriture non demandée.
+Page : https://max-code-menace.github.io/Orbite/ — mise en ligne seulement depuis la branche principale
+`ccr-be406ff5-wxbiv4`. Travaille sur ta branche de session ; étape finie = pull request ; elle fusionne.
+Petits commits en français (quoi et pourquoi). Ne touche pas aux fichiers hors de l'étape ;
+pas de grande réécriture non demandée.
 
-## Règles techniques
+## Règles techniques (celles marquées 🤖 sont vérifiées par `npm test`)
 
-- **Les données restent dans `public/systeme.json`** (nom, bio, liens). Jamais de lien écrit en dur dans le code.
-  Le texte venant des données s'affiche avec `textContent`, jamais `innerHTML`.
-- **Pas de vrais logos** (Instagram, YouTube…) : icônes simples maison (`src/icons.js`) et nom écrit en clair.
-- **Budget de fluidité** : 60 img/s sur l'iPhone 15, au moins 30 sur un vieux téléphone. Donc :
-  - pas de `backdrop-filter` (flou) au-dessus de la 3D : c'est lui qui faisait tomber la tablette à 24 img/s ;
-  - les pièces fixes d'une île sont fusionnées en un seul objet (`Assemblage` dans `src/decors.js`) ;
-  - seules les pièces qui bougent sont des objets à part ; préférer `InstancedMesh` pour les répétitions ;
-  - résolution plafonnée (`BUDGET_PIXELS`) et mode allégé automatique (`PALIERS`) dans `src/main.js` : ne pas les retirer ;
-  - l'animation s'arrête quand la page est cachée ; respecter « réduire les animations ».
-- Toute nouvelle dépendance doit être justifiée et expliquée simplement avant d'être ajoutée.
-- Code commenté en français simple, fichiers courts, une responsabilité par fichier.
+- Données dans `public/systeme.json` seulement 🤖 ; texte des données via `textContent`, jamais `innerHTML` 🤖.
+- Pas de vrais logos : icônes maison (`src/icons.js`) et nom écrit en clair.
+- Fluidité : 60 img/s iPhone 15, ≥ 30 vieux téléphone. Pas de `backdrop-filter` 🤖. Pièces fixes fusionnées
+  (`Assemblage`, `src/decors.js`) ; seules les pièces qui bougent sont à part ; `InstancedMesh` pour les répétitions. Budget de pixels et paliers
+  (`src/fluidite.js`) toujours branchés 🤖 ; pause quand la page est cachée ; « réduire les animations » respecté 🤖.
+- Nouvelle dépendance : justifiée et expliquée avant, version fixée 🤖. Code commenté en français, fichiers courts,
+  une responsabilité par fichier.

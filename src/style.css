@@ -15,7 +15,7 @@ body {
   height: 100%;
   overflow: hidden;
   color: var(--texte);
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   /* Le ciel : un dégradé bleu nuit et violet, dessiné par le navigateur (gratuit pour le téléphone). */
   background:
     radial-gradient(ellipse 90% 55% at 70% 30%, rgba(155, 70, 230, 0.35), transparent 70%),
@@ -44,7 +44,9 @@ body {
   padding: 4px 8px;
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.6);
-  font: 600 13px/1.2 ui-monospace, monospace;
+  font:
+    600 13px / 1.2 ui-monospace,
+    monospace;
   z-index: 10;
 }
 
@@ -88,9 +90,7 @@ body {
    coûte très cher à chaque image. Un fond violet presque opaque, avec un léger
    reflet en haut, donne le même effet visuel pour presque rien. */
 .verre {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 40%),
-    rgba(30, 15, 62, 0.92);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 40%), rgba(30, 15, 62, 0.92);
   border: 1px solid rgba(200, 160, 255, 0.22);
   box-shadow: 0 10px 40px rgba(10, 0, 30, 0.45);
 }
@@ -312,6 +312,7 @@ body {
     border-radius: 22px;
     border-bottom: 1px solid rgba(200, 160, 255, 0.22);
     padding-bottom: 0;
+    /* biome-ignore lint/complexity/noImportantStyles: annule le glissement écrit par ui.js (feuille fixe sur tablette) */
     transform: none !important;
     touch-action: auto;
   }

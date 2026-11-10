@@ -1,7 +1,8 @@
 # Vérifie la page à chaque envoi de code, et la met en ligne seulement si tout passe.
 #
-# - Sur n'importe quelle branche : vérification du fichier de données, construction,
-#   test automatique sur téléphone et tablette (captures téléchargeables dans « Artifacts »).
+# - Sur n'importe quelle branche : niveau 3 de scripts/check.mjs (format, linter, tests
+#   rapides, secrets, audit des dépendances, données, construction, test téléphone et
+#   tablette ; captures téléchargeables dans « Artifacts »).
 # - Sur la branche principale du dépôt uniquement : mise en ligne sur GitHub Pages.
 #   Si un test échoue, la mise en ligne n'a pas lieu : la page en ligne reste l'ancienne.
 name: Vérification et mise en ligne
@@ -31,8 +32,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - name: Vérifier les données, construire et tester sur mobile
-        run: npm run verifier
+      # Niveau 3 : format, linter, tests rapides, secrets, audit des dépendances,
+      # puis vérification des données, construction et test téléphone + tablette.
+      - name: Tout vérifier (niveau 3)
+        run: npm run check -- --ci
       - name: Garder les captures d'écran du test
         if: always()
         uses: actions/upload-artifact@v4

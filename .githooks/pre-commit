@@ -1,0 +1,3 @@
+#!/bin/sh
+# Détection de secrets avant chaque commit (voir scripts/hooks/avant-commit.mjs).
+exec node scripts/hooks/avant-commit.mjs

@@ -1,6 +1,6 @@
 # Orbite — état du projet
 
-Dernière mise à jour : 10 novembre 2026, après l'étape 6.
+Dernière mise à jour : 10 novembre 2026, session 3 (harnais de vérification ; aucune étape du produit avancée).
 
 ## Le plan en 8 étapes
 
@@ -14,6 +14,16 @@ Dernière mise à jour : 10 novembre 2026, après l'étape 6.
 | 6 | Bouton « Changer de décor » sur la planète libre, avec animation | ✅ fait, testé en simulation ; **pas encore mesuré sur appareil** |
 | 7 | Petites créatures décoratives (facultatives, à retirer en premier si ça rame) | ⏳ à faire |
 | 8 | Derniers réglages de fluidité + checklist des critères de réussite du brief | ⏳ à faire |
+
+## Où on s'est arrêté (session 3)
+
+- Pull request n°1 (étape 6) : fusionnée. Les 2 commits arrivés après la fusion (règle du récap, état) étaient
+  restés sur l'ancienne branche : récupérés en session 3.
+- Session 3 : mise en place du harnais (voir `docs/HARNAIS.md`). À faire par la personne : protéger la branche
+  principale et activer la protection GitHub contre les secrets.
+- En attente : ses mesures de l'étape 6 sur iPhone 15 et S10 Lite (img/s pendant « Changer de décor »,
+  confort du bouton, décors vus). Lien donné : `?fps&v=11`.
+- Prochaine étape : 7 (créatures). Présenter le plan et attendre son accord avant de coder.
 
 ## Mesures faites sur les vrais appareils
 
@@ -36,10 +46,14 @@ Dernière mise à jour : 10 novembre 2026, après l'étape 6.
 | `src/ui.js` | Profil, Accès rapide (feuille glissable ; colonne fixe sur tablette à l'horizontale), panneau d'une planète. |
 | `src/icons.js` | Icônes maison (pas de vrais logos). |
 | `src/style.css` | Styles. Pas de `backdrop-filter`. |
-| `scripts/verifier-donnees.mjs` | Vérifie `systeme.json` (JSON valide, 5 planètes, liens en https). |
+| `scripts/verifier-donnees.mjs`, `scripts/donnees.mjs` | Vérifient `systeme.json` (JSON valide, 5 planètes, liens et photo en https uniquement). |
+| `src/fluidite.js` | Budget de pixels, paliers du mode allégé (sortis de `main.js` pour être testés sans navigateur). |
+| `scripts/check.mjs`, `scripts/niveaux.mjs` | `npm run check` : choisit le niveau de vérification d'après les fichiers modifiés. |
+| `tests/` | Tests rapides (< 1 s) : données, règles du projet, logique, niveaux, harnais. |
+| `scripts/hooks/`, `.githooks/`, `.claude/settings.json` | Hooks automatiques et commandes interdites à Claude. |
 | `scripts/test-mobile.mjs` | Test Playwright sur téléphone et tablette : 3D affichée, étiquettes, Accès rapide, ouverture/fermeture du panneau, « Changer de décor » (décor, couleurs, animation), aucune erreur. Captures dans `test-resultats/`. |
-| `.claude/agents/relecteur.md` | Agent relecteur sceptique : à lancer avant d'annoncer qu'une étape est finie (verdict PRÊT / PAS PRÊT, preuves). |
-| `.github/workflows/deploy.yml` | Sur chaque envoi : `npm run verifier`. Sur la branche principale seulement, et si tout passe : mise en ligne GitHub Pages. |
+| `.claude/agents/` | `relecteur` (avant fusion), `securite` (zones sensibles), `auditeur-harness` (une fois par mois). |
+| `.github/workflows/deploy.yml` | Sur chaque envoi : `npm run check -- --ci` (niveau 3). Sur la branche principale seulement, et si tout passe : mise en ligne GitHub Pages. |
 
 ## Décisions prises (et pourquoi)
 

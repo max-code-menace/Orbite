@@ -26,7 +26,7 @@ class Assemblage {
 
   // geo : la forme ; couleur ; matrice : où la poser (on peut enchaîner des matrices).
   ajouter(geo, couleur, ...matrices) {
-    let g = geo.index ? geo.toNonIndexed() : geo.clone();
+    const g = geo.index ? geo.toNonIndexed() : geo.clone();
     g.deleteAttribute('uv');
     g.deleteAttribute('normal');
     for (const mat of matrices) g.applyMatrix4(mat);
@@ -46,7 +46,7 @@ class Assemblage {
   objet() {
     const geo = mergeGeometries(this.pieces);
     geo.computeVertexNormals();
-    this.pieces.forEach((p) => p.dispose());
+    for (const p of this.pieces) p.dispose();
     return new THREE.Mesh(geo, matiereDecor);
   }
 }
@@ -113,7 +113,12 @@ function decorInstagram() {
     a.ajouter(new THREE.BoxGeometry(0.36, 0.25, 0.046), photo, m([0, SOL + 0.445, 0]), pose);
     // une petite montagne et un soleil sur la photo
     a.ajouter(new THREE.BoxGeometry(0.07, 0.07, 0.05), '#fff2a8', m([0.09, SOL + 0.5, 0]), pose);
-    a.ajouter(new THREE.ConeGeometry(0.1, 0.12, 3), '#ffffff', m([-0.07, SOL + 0.39, 0], [0, 0, 0], [1, 1, 0.26]), pose);
+    a.ajouter(
+      new THREE.ConeGeometry(0.1, 0.12, 3),
+      '#ffffff',
+      m([-0.07, SOL + 0.39, 0], [0, 0, 0], [1, 1, 0.26]),
+      pose,
+    );
   }
   // Des fleurs.
   const fleurs = [
@@ -140,7 +145,11 @@ function decorYouTube() {
   a.ajouter(new THREE.BoxGeometry(0.72, 0.44, 0.06), '#2a1840', m([0, SOL + 0.44, z]));
   a.ajouter(new THREE.BoxGeometry(0.64, 0.36, 0.064), '#ff4f4f', m([0, SOL + 0.44, z]));
   // le triangle de lecture, en relief sur les deux faces de l'écran
-  const triangle = new THREE.Shape([new THREE.Vector2(-0.06, -0.08), new THREE.Vector2(0.09, 0), new THREE.Vector2(-0.06, 0.08)]);
+  const triangle = new THREE.Shape([
+    new THREE.Vector2(-0.06, -0.08),
+    new THREE.Vector2(0.09, 0),
+    new THREE.Vector2(-0.06, 0.08),
+  ]);
   const relief = new THREE.ExtrudeGeometry(triangle, { depth: 0.08, bevelEnabled: false });
   a.ajouter(relief, '#ffffff', m([0, SOL + 0.44, z - 0.04]));
   // Deux petites maisons-studios.
@@ -164,8 +173,16 @@ function decorSpotify() {
   // Deux enceintes.
   for (const x of [-0.52, 0.52]) {
     a.ajouter(new THREE.BoxGeometry(0.17, 0.32, 0.15), '#1b1628', m([x, SOL + 0.16, z + 0.1]));
-    a.ajouter(new THREE.CylinderGeometry(0.055, 0.055, 0.02, 8), '#3dffa0', m([x, SOL + 0.11, z + 0.18], [Math.PI / 2, 0, 0]));
-    a.ajouter(new THREE.CylinderGeometry(0.03, 0.03, 0.02, 8), '#9dffd0', m([x, SOL + 0.24, z + 0.18], [Math.PI / 2, 0, 0]));
+    a.ajouter(
+      new THREE.CylinderGeometry(0.055, 0.055, 0.02, 8),
+      '#3dffa0',
+      m([x, SOL + 0.11, z + 0.18], [Math.PI / 2, 0, 0]),
+    );
+    a.ajouter(
+      new THREE.CylinderGeometry(0.03, 0.03, 0.02, 8),
+      '#9dffd0',
+      m([x, SOL + 0.24, z + 0.18], [Math.PI / 2, 0, 0]),
+    );
   }
   arbre(a, -0.4, 0.42, 0.26, '#2fbf6a');
   arbre(a, 0.42, 0.4, 0.3, '#3ccf7a');
@@ -175,11 +192,18 @@ function decorSpotify() {
   const n = 6;
   const barres = new THREE.InstancedMesh(
     new THREE.BoxGeometry(0.07, 1, 0.05),
-    new THREE.MeshStandardMaterial({ color: '#3dffa0', emissive: '#1aff8a', emissiveIntensity: 0.6, flatShading: true }),
+    new THREE.MeshStandardMaterial({
+      color: '#3dffa0',
+      emissive: '#1aff8a',
+      emissiveIntensity: 0.6,
+      flatShading: true,
+    }),
     n,
   );
   const teintes = ['#3dffa0', '#5affc0', '#9dffd0', '#ffd34d', '#ff6fb1', '#c86bff'];
-  teintes.forEach((t, i) => barres.setColorAt(i, new THREE.Color(t)));
+  teintes.forEach((t, i) => {
+    barres.setColorAt(i, new THREE.Color(t));
+  });
   const groupe = new THREE.Group();
   groupe.add(a.objet(), barres);
 
@@ -269,7 +293,11 @@ export const decorsLibres = {
         [0.55, 0.05, 0.18, '#ffffff', 0.2],
       ];
       for (const [x, z, h, c, pench] of cristaux) {
-        a.ajouter(new THREE.OctahedronGeometry(1, 0), c, m([x, SOL + h * 0.5, z], [0, x * 3, pench], [h * 0.22, h * 0.6, h * 0.22]));
+        a.ajouter(
+          new THREE.OctahedronGeometry(1, 0),
+          c,
+          m([x, SOL + h * 0.5, z], [0, x * 3, pench], [h * 0.22, h * 0.6, h * 0.22]),
+        );
       }
     },
   },
@@ -285,8 +313,16 @@ export const decorsLibres = {
       ];
       for (const [x, z, h, c] of champis) {
         a.ajouter(new THREE.CylinderGeometry(h * 0.12, h * 0.16, h * 0.6, 6), '#fff4e6', m([x, SOL + h * 0.3, z]));
-        a.ajouter(new THREE.SphereGeometry(h * 0.4, 7, 3, 0, Math.PI * 2, 0, Math.PI / 2), c, m([x, SOL + h * 0.55, z]));
-        a.ajouter(new THREE.IcosahedronGeometry(h * 0.07, 0), '#ffffff', m([x + h * 0.15, SOL + h * 0.85, z + h * 0.1]));
+        a.ajouter(
+          new THREE.SphereGeometry(h * 0.4, 7, 3, 0, Math.PI * 2, 0, Math.PI / 2),
+          c,
+          m([x, SOL + h * 0.55, z]),
+        );
+        a.ajouter(
+          new THREE.IcosahedronGeometry(h * 0.07, 0),
+          '#ffffff',
+          m([x + h * 0.15, SOL + h * 0.85, z + h * 0.1]),
+        );
       }
       fleur(a, 0.55, -0.1, '#ffffff');
       fleur(a, -0.1, 0.5, '#ffd34d');
@@ -325,6 +361,13 @@ export const decorsLibres = {
 };
 
 export const typesLibres = Object.keys(decorsLibres);
+
+// Tire un type de décor libre toujours différent de l'actuel
+// (sinon on croirait que le bouton « Changer de décor » ne marche pas).
+export function tirerAutreType(actuel, hasard = Math.random) {
+  const autres = typesLibres.filter((t) => t !== actuel);
+  return autres[Math.floor(hasard() * autres.length)];
+}
 
 function decorLibre(type) {
   const a = new Assemblage();
