@@ -34,6 +34,9 @@ Dernière mise à jour : 10 novembre 2026, session 5 (étape « voyage entre sys
 - **Pas vérifié (à faire sur tes appareils)** : fluidité réelle à chaque voyage (iPhone 15, S10 Lite) ; geste au pouce et
   Safari ; ressenti de l'animation (seuls départ et arrivée sont testés) ; matières 3D non libérées à chaque voyage
   (volontaire : partagées) ; **l'envie de continuer** (impossible à mesurer avec des systèmes inventés).
+- **La cible (maquettes de la personne, 10/11)** : méga-galaxie → galaxies par thème → systèmes → planètes, navigation par
+  rotation, voyage « Direction la galaxie… », comptes/favoris/messagerie. Décrite dans `docs/VISION.md`. Elle ne remplace pas
+  les étapes ci-dessous ; elle dit où on va. Le « voyage » de la session 5 en est le début.
 - **Suite possible** : « Fais le tien » ; « Surprends-moi » ; mettre les amis d'abord dans l'ordre du défilé ; thèmes.
 
 ## Où on s'est arrêté (session 4)
