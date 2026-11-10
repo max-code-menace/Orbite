@@ -16,9 +16,11 @@ lien à ouvrir (`?fps&v=N`, N augmenté à chaque fois), quoi regarder, quoi mes
 ## Honnêteté
 
 - Jamais « ça marche » sans preuve : `npm run verifier` qui passe + captures de `test-resultats/` regardées.
+  Cite ce que tu as vérifié.
 - Sépare vérifié / pas vérifié. Fluidité réelle, pouce, chaleur, plein soleil, Safari : seulement sur ses appareils.
 - Une correction non reproduite est une piste, pas une solution. Aucun chiffre inventé. Un échec s'annonce.
-- Ce qu'elle seule peut faire (réglages GitHub, fusion) : dis-le avec le chemin exact.
+- Ne lui demande pas ce que tu peux faire toi-même. Ce qu'elle seule peut faire (réglages GitHub, fusion) :
+  dis-le avec le chemin exact.
 
 ## Commandes
 
@@ -32,25 +34,28 @@ lien à ouvrir (`?fps&v=N`, N augmenté à chaque fois), quoi regarder, quoi mes
 - Ne désactive, n'affaiblis ni ne contourne jamais une vérification : corrige le code.
 - Nouvelle fonctionnalité = nouvelle vérification (`tests/` si possible sans navigateur, sinon `scripts/test-mobile.mjs`).
 - **Niveau 2** (zone sensible) → agent `securite`. **Avant d'annoncer une étape finie** → agent `relecteur` ;
-  s'il dit PAS PRÊT, corrige. `auditeur-harness` : une fois par mois ou à sa demande.
+  s'il dit PAS PRÊT, corrige ; transmets-lui honnêtement ce qu'il signale « non vérifié ». `auditeur-harness` : une fois par mois ou à sa demande.
 - Après chaque envoi, vérifie le résultat sur GitHub Actions et annonce-le.
 
 ## Zones sensibles (niveau 2)
 
 `public/systeme.json` (données publiques de la personne), `src/ui.js` (affichage des liens), `package*.json`
-(dépendances), `.github/` (mise en ligne), `.claude/`, `.githooks/`, `scripts/check.mjs`, `scripts/niveaux.mjs`.
+(dépendances), `.github/` (mise en ligne), `.claude/`, `.githooks/`, `scripts/hooks/`, `scripts/check.mjs`,
+`scripts/niveaux.mjs`, `scripts/verifier-donnees.mjs`.
 
 ## Git et mise en ligne
 
 Page : https://max-code-menace.github.io/Orbite/ — mise en ligne seulement depuis la branche principale
 `ccr-be406ff5-wxbiv4`. Travaille sur ta branche de session ; étape finie = pull request ; elle fusionne.
-Petits commits en français (quoi et pourquoi). Ne touche pas aux fichiers hors de l'étape.
+Petits commits en français (quoi et pourquoi). Ne touche pas aux fichiers hors de l'étape ;
+pas de grande réécriture non demandée.
 
 ## Règles techniques (celles marquées 🤖 sont vérifiées par `npm test`)
 
 - Données dans `public/systeme.json` seulement 🤖 ; texte des données via `textContent`, jamais `innerHTML` 🤖.
 - Pas de vrais logos : icônes maison (`src/icons.js`) et nom écrit en clair.
 - Fluidité : 60 img/s iPhone 15, ≥ 30 vieux téléphone. Pas de `backdrop-filter` 🤖. Pièces fixes fusionnées
-  (`Assemblage`, `src/decors.js`) ; `InstancedMesh` pour les répétitions. Budget de pixels et paliers
+  (`Assemblage`, `src/decors.js`) ; seules les pièces qui bougent sont à part ; `InstancedMesh` pour les répétitions. Budget de pixels et paliers
   (`src/fluidite.js`) toujours branchés 🤖 ; pause quand la page est cachée ; « réduire les animations » respecté 🤖.
-- Nouvelle dépendance : justifiée et expliquée avant, version fixée 🤖. Code commenté en français, fichiers courts.
+- Nouvelle dépendance : justifiée et expliquée avant, version fixée 🤖. Code commenté en français, fichiers courts,
+  une responsabilité par fichier.

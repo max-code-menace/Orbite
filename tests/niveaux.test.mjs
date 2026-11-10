@@ -16,6 +16,8 @@ const cas = [
   [['package-lock.json'], 2],
   [['.github/workflows/deploy.yml'], 2],
   [['.claude/settings.json'], 2],
+  [['scripts/hooks/avant-commit.mjs'], 2],
+  [['scripts/verifier-donnees.mjs'], 2],
   [['src/decors.js', 'package.json'], 2],
 ];
 

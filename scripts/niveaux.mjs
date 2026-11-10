@@ -5,7 +5,8 @@
 export const SENSIBLES = [
   /^public\/systeme\.json$/,
   /^src\/ui\.js$/,
-  /^scripts\/(donnees|check|niveaux)\.mjs$/,
+  /^scripts\/(donnees|verifier-donnees|check|niveaux)\.mjs$/,
+  /^scripts\/hooks\//,
   /^package(-lock)?\.json$/,
   /^\.github\//,
   /^\.claude\//,
