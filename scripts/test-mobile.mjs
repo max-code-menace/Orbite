@@ -253,6 +253,32 @@ async function verifierVoyage(page, nom) {
   await page.waitForTimeout(900);
   verifier((await id()) === 'luna', 'après le dernier système, on revient au premier');
 
+  // --- « Fais le tien » : le formulaire prépare un message, rien n'est enregistré ---
+  await page.goto(`${url}#luna`);
+  await page.waitForTimeout(1500);
+  const bouton = await page.locator('.ft-ouvrir').boundingBox();
+  verifier(
+    bouton && bouton.height >= 40 && bouton.x + bouton.width <= page.viewportSize().width,
+    'le bouton « Fais le tien » est visible et assez grand',
+  );
+  await page.locator('.ft-ouvrir').click();
+  verifier(await page.locator('#faistien').isVisible(), 'toucher « Fais le tien » ouvre le formulaire');
+  await page.locator('#faistien button.ft-bouton').first().click();
+  verifier((await page.locator('.ft-erreur').textContent()).includes('nom'), 'sans nom, le formulaire le dit');
+  await page.locator('#faistien input[type=text]').first().fill('Ana Test');
+  await page.locator('#faistien input[type=url]').first().fill('http://pas-https.fr');
+  await page.locator('#faistien button.ft-bouton').first().click();
+  verifier((await page.locator('.ft-erreur').textContent()).includes('https'), 'un lien sans https:// est refusé');
+  await page.locator('#faistien input[type=url]').first().fill('https://exemple.fr/ana');
+  await page.locator('#faistien button.ft-bouton').first().click();
+  verifier(
+    (await page.locator('.ft-sortie').inputValue()).includes('Nom : Ana Test'),
+    'le message préparé contient le nom',
+  );
+  await page.screenshot({ path: `${DOSSIER}/${nom}-9-faistien.png` });
+  await page.locator('#faistien .ft-fermer').click();
+  verifier(!(await page.locator('#faistien').isVisible()), 'le formulaire se ferme');
+
   // Une adresse qui ne veut rien dire ne casse rien.
   await page.goto(`${url}#%E0%A4%A`);
   await page.waitForTimeout(1500);

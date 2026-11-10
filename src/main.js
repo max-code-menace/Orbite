@@ -6,6 +6,7 @@ import { creerPlanetes } from './planets.js';
 import { remplirProfil, creerAccesRapide, creerPanneau, ecranLarge } from './ui.js';
 import { amisDe, indexDepuisAdresse, indexNomme, indicesDuTheme, sensDuBalayage, voisinDans } from './parcours.js';
 import { creerBandeAmis } from './amis.js';
+import { creerFaisLeTien } from './faistien.js';
 
 const container = document.getElementById('scene');
 
@@ -102,6 +103,7 @@ let courant = 0; // la position du système affiché dans galaxie.systemes
 let systeme = null;
 let acces = null;
 const conteneurEtiquettes = document.getElementById('etiquettes');
+let faisLeTien = null; // le formulaire « Fais le tien » (créé quand les données sont lues)
 let themeActif = null; // le thème choisi (son id), ou null = « Tous »
 const bandeAmis = creerBandeAmis(
   document.getElementById('amis'),
@@ -123,6 +125,7 @@ function afficherSysteme(index) {
   if (themeActif && donnees.theme !== themeActif) themeActif = null;
   bandeAmis.marquerTheme(themeActif);
   remplirProfil(document.getElementById('profil'), donnees.profil);
+  faisLeTien?.ajouterBouton(document.getElementById('profil'));
   bandeAmis.remplir(galaxie.systemes, amisDe(galaxie.systemes, donnees));
   if (acces) acces.remplir(donnees.planetes);
   else acces = creerAccesRapide(document.getElementById('acces'), donnees.planetes, resize);
@@ -138,6 +141,7 @@ fetch('./galaxie.json')
   .then((g) => {
     galaxie = g;
     bandeAmis.creerThemes(g.themes);
+    faisLeTien = creerFaisLeTien(g.themes, () => panneau.fermer());
     afficherSysteme(indexDepuisAdresse(g.systemes, window.location.hash));
     exposerEtatPourTests();
   })

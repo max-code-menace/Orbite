@@ -1,6 +1,6 @@
 # Orbite — état du projet
 
-Dernière mise à jour : 10 novembre 2026, session 5 (voyage entre systèmes fusionné et en ligne ; étape « thèmes » faite, à fusionner).
+Dernière mise à jour : 10 novembre 2026, session 6 (thèmes fusionnés, PR n°10 ; « Fais le tien » faite, à fusionner).
 
 ## Le plan en 8 étapes
 
@@ -14,6 +14,19 @@ Dernière mise à jour : 10 novembre 2026, session 5 (voyage entre systèmes fus
 | 6 | Bouton « Changer de décor » sur la planète libre, avec animation | ✅ fait ; mesuré : iPhone 15 à 60 img/s, tablette à 83-90 img/s |
 | 7 | Petites créatures décoratives (facultatives, à retirer en premier si ça rame) | ✅ fait, testé en simulation ; **pas encore vu ni mesuré sur appareil** |
 | 8 | Derniers réglages de fluidité + checklist des critères de réussite du brief | ⏳ à faire |
+
+## Où on s'est arrêté (session 6)
+
+- Les thèmes sont fusionnés (PR n°10). Il n'existe pas de section « Pour la prochaine conversation » : ce paragraphe en tient lieu.
+- **« Fais le tien » faite** (branche de session, à fusionner) : bouton « ✨ Fais le tien » dans le profil → feuille avec nom,
+  bio, thème (facultatifs) et 1 à 5 liens → « Préparer mon message » affiche un texte → « Partager / copier » (partage du
+  téléphone, sinon copie). **Rien n'est envoyé ni enregistré** par l'appli ; la personne envoie le message elle-même.
+  Règles : nom ≤ 40 caractères, bio ≤ 80, liens en `https://` seulement, 5 au plus. Fichier : `src/faistien.js`.
+  **Vérifié (simulation)** : tests rapides 75/75 ; `npm run verifier` ✅ téléphone + tablette (ouverture, erreurs « sans nom »
+  et « lien sans https », message préparé, fermeture) ; captures regardées. **Pas vérifié** : le partage réel sur iPhone
+  (Safari) et Samsung ; le ressenti du bouton, qui réduit la place de la bio dans le profil (elle est plus coupée) ;
+  **l'envie de s'en servir**. À décider : à qui les gens envoient-ils le message ? (aujourd'hui : « la personne qui t'a donné le lien »).
+- **Suite possible** : « Surprends-moi » ; amis d'abord dans l'ordre du défilé ; un vrai canal pour recevoir les demandes.
 
 ## Où on s'est arrêté (session 5)
 
@@ -97,6 +110,7 @@ Dernière mise à jour : 10 novembre 2026, session 5 (voyage entre systèmes fus
 | `src/decors.js` | Décors des îles. `Assemblage` fusionne les pièces fixes d'une île en un seul objet. Décors de la planète libre : `decorsLibres` (foret, cristaux, champignons, glace, volcan). |
 | `src/creatures.js` | Étape 7 : la petite bestiole de chaque île (corps rond, yeux, accessoire), fusionnée en un seul objet ; son saut / tour de tête (`pose`). |
 | `src/parcours.js` | Voyage entre systèmes : adresse `#id`, suivant/précédent, amis, sens d'un balayage (logique pure, testée). |
+| `src/faistien.js` | « Fais le tien » : formulaire qui prépare un message (liens https seulement, rien d'enregistré). Logique testée sans navigateur. |
 | `src/amis.js` | La bande sous le profil : flèches précédent/suivant et amis du système affiché. |
 | `src/ui.js` | Profil, Accès rapide (feuille glissable ; colonne fixe sur tablette à l'horizontale), panneau d'une planète. |
 | `src/icons.js` | Icônes maison (pas de vrais logos). |
@@ -149,7 +163,7 @@ Dernière mise à jour : 10 novembre 2026, session 5 (voyage entre systèmes fus
 - Poids de la page : ~616 Ko de JavaScript (~157 Ko compressés), surtout Three.js. À surveiller pour le critère
   « s'ouvre en moins de 3 s en 4G » (étape 8).
 
-- Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=14`).
+- Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=15`).
 - Le compte GitHub Pages est activé avec la source « GitHub Actions ». La branche principale du dépôt est
   `ccr-be406ff5-wxbiv4` : c'est elle qui est mise en ligne.
 - Étape 8 : le brief demande aussi « moins d'étoiles, pas de lueurs » dans le mode allégé ; aujourd'hui seuls les

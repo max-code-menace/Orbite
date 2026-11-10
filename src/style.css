@@ -686,3 +686,125 @@ body.focus #amis {
     transition-duration: 0.01s;
   }
 }
+
+/* --- « Fais le tien » : bouton dans le profil + petite feuille de formulaire ------- */
+.ft-ouvrir {
+  flex: none;
+  margin-left: auto;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(200, 160, 255, 0.5);
+  background: linear-gradient(135deg, #c86bff, #5a8cff);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#faistien {
+  position: fixed;
+  left: 50%;
+  top: calc(env(safe-area-inset-top) + 12px);
+  transform: translateX(-50%);
+  width: min(calc(100% - 24px), 480px);
+  max-height: calc(100% - env(safe-area-inset-top) - 24px);
+  overflow-y: auto;
+  padding: 14px;
+  border-radius: 22px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#faistien[hidden] {
+  display: none;
+}
+
+.ft-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ft-titre {
+  margin: 0;
+  font-size: 18px;
+}
+
+.ft-champ {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ft-libelle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #d8c4ff;
+}
+
+#faistien input,
+#faistien select,
+#faistien textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(200, 160, 255, 0.4);
+  background: rgba(20, 8, 44, 0.9);
+  color: inherit;
+  font: inherit;
+  font-size: 16px; /* 16 px : Safari ne zoome pas la page quand on touche un champ */
+}
+
+.ft-bouton {
+  min-height: 44px;
+  border-radius: 999px;
+  border: 0;
+  background: linear-gradient(135deg, #c86bff, #5a8cff);
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ft-erreur {
+  margin: 0;
+  min-height: 1em;
+  font-size: 14px;
+  color: #ffd1a8;
+}
+
+.ft-note {
+  margin: 0;
+  font-size: 13px;
+  color: #d8c4ff;
+}
+
+/* Feuille ouverte : le reste (profil, bande, Accès rapide) s'efface derrière. */
+body.ft-ouvert #profil,
+body.ft-ouvert #amis,
+body.ft-ouvert #acces {
+  visibility: hidden;
+}
+
+.ft-fermer {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Le message préparé garde sa hauteur (sinon la feuille qui défile l'écrase). */
+.ft-sortie {
+  flex: none;
+  min-height: 150px;
+}

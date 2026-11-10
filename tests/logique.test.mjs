@@ -179,3 +179,41 @@ test("suivant / précédent restent dans le thème, font le tour, et entrent par
   assert.equal(voisinDans([3], 3, 1), 3); // un seul système : on reste
   assert.equal(voisinDans([], 2, 1), 2);
 });
+
+// --- « Fais le tien » : le message préparé et les liens acceptés ---
+import { construireMessage, lienValide } from '../src/faistien.js';
+
+test('« Fais le tien » : seuls les liens https:// bien formés sont acceptés', () => {
+  assert.equal(lienValide('https://exemple.fr/moi'), true);
+  for (const mauvais of [
+    'http://exemple.fr',
+    'javascript:alert(1)',
+    'exemple.fr',
+    'https://',
+    'https://a b.fr',
+    '',
+    null,
+  ]) {
+    assert.equal(lienValide(mauvais), false, String(mauvais));
+  }
+  assert.equal(lienValide(`https://exemple.fr/${'a'.repeat(300)}`), false);
+});
+
+test('« Fais le tien » : le message contient nom, bio, thème et liens', () => {
+  const r = construireMessage({ nom: ' Ana ', bio: 'Salut', theme: 'Musique', liens: ['https://exemple.fr/a', ''] });
+  assert.match(r.texte, /Nom : Ana/);
+  assert.match(r.texte, /Bio : Salut/);
+  assert.match(r.texte, /Thème : Musique/);
+  assert.match(r.texte, /- https:\/\/exemple\.fr\/a/);
+});
+
+test('« Fais le tien » : refuse nom vide, trop long, pas de lien, lien faux, trop de liens', () => {
+  const ok = { nom: 'Ana', bio: '', theme: '', liens: ['https://exemple.fr'] };
+  assert.ok(construireMessage(ok).texte);
+  assert.ok(construireMessage({ ...ok, nom: '  ' }).erreur);
+  assert.ok(construireMessage({ ...ok, nom: 'x'.repeat(41) }).erreur);
+  assert.ok(construireMessage({ ...ok, bio: 'x'.repeat(81) }).erreur);
+  assert.ok(construireMessage({ ...ok, liens: ['', ' '] }).erreur);
+  assert.ok(construireMessage({ ...ok, liens: ['http://non.fr'] }).erreur);
+  assert.ok(construireMessage({ ...ok, liens: Array(6).fill('https://exemple.fr') }).erreur);
+});
