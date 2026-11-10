@@ -100,7 +100,7 @@ export function createAsteroids(count) {
   const items = [];
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
-    const radius = 7 + Math.random() * 5;
+    const radius = 8.5 + Math.random() * 5;
     items.push({
       angle,
       radius,
