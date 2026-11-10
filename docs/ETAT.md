@@ -1,6 +1,6 @@
 # Orbite — état du projet
 
-Dernière mise à jour : 10 novembre 2026, session 5 (étape « voyage entre systèmes » faite, à essayer sur appareil).
+Dernière mise à jour : 10 novembre 2026, session 5 (voyage entre systèmes fusionné et en ligne ; étape « thèmes » faite, à fusionner).
 
 ## Le plan en 8 étapes
 
@@ -16,6 +16,17 @@ Dernière mise à jour : 10 novembre 2026, session 5 (étape « voyage entre sys
 | 8 | Derniers réglages de fluidité + checklist des critères de réussite du brief | ⏳ à faire |
 
 ## Où on s'est arrêté (session 5)
+
+- **Étape « thèmes » faite** (branche de session, à fusionner), 1re étape vers `docs/VISION.md` : `galaxie.json` a une liste
+  `themes` (Musique, Voyages, Cuisine, Gaming, Création, Nature) et chaque système un `theme` (exemples inventés). La bande sous
+  le profil montre des pastilles « Tous · Musique · … » **avant** les amis (la bande défile). Toucher un thème emmène dans son
+  premier système ; flèches et balayage restent ensuite **dans ce thème** (on refait le tour) ; « Tous » = toute la liste.
+  Arriver chez quelqu'un d'un autre thème (ami, adresse) repasse sur « Tous ». Le thème choisi n'est pas gardé dans l'adresse
+  (`#id` seulement) ni au rechargement. Validation : thèmes uniques, id sûr, nom ≤ 20 caractères, ≤ 12 thèmes, chaque thème a un système.
+  **Vérifié (simulation)** : tests rapides 70/70 ; `npm run verifier` ✅ téléphone + tablette (pastilles, choix d'un thème, tour du
+  thème par flèche et par balayage, retour à « Tous », ami d'un autre thème) ; captures regardées. **Pas vérifié** : le ressenti
+  sur appareil ; **les amis sont maintenant cachés à droite des pastilles** (il faut faire défiler la bande) : à juger sur
+  téléphone si c'est trop discret.
 
 - **Réflexion de la session 5** : le visiteur d'un lien en bio ne reste que s'il a « quelque chose à lui ». Direction choisie
   avec la personne, **sans serveur** (on teste d'abord avec ses copains, systèmes ajoutés à la main dans `galaxie.json`) :

@@ -4,7 +4,7 @@ import { createSun } from './sun.js';
 import { PALIERS, calculerRatio, creaturesVisibles, palierApres } from './fluidite.js';
 import { creerPlanetes } from './planets.js';
 import { remplirProfil, creerAccesRapide, creerPanneau, ecranLarge } from './ui.js';
-import { amisDe, indexDepuisAdresse, indexNomme, sensDuBalayage, voisin } from './parcours.js';
+import { amisDe, indexDepuisAdresse, indexNomme, indicesDuTheme, sensDuBalayage, voisinDans } from './parcours.js';
 import { creerBandeAmis } from './amis.js';
 
 const container = document.getElementById('scene');
@@ -102,10 +102,12 @@ let courant = 0; // la position du système affiché dans galaxie.systemes
 let systeme = null;
 let acces = null;
 const conteneurEtiquettes = document.getElementById('etiquettes');
+let themeActif = null; // le thème choisi (son id), ou null = « Tous »
 const bandeAmis = creerBandeAmis(
   document.getElementById('amis'),
   (i) => voyagerVers(i),
   (sens) => voyager(sens),
+  (id) => choisirTheme(id),
 );
 
 // Remplace le système affiché par celui-là (sans animation : voir voyagerVers pour l'animation).
@@ -117,6 +119,9 @@ function afficherSysteme(index) {
   }
   courant = index;
   const donnees = galaxie.systemes[index];
+  // Arrivé chez quelqu'un d'un autre thème (lien d'un ami, adresse) : on repasse sur « Tous ».
+  if (themeActif && donnees.theme !== themeActif) themeActif = null;
+  bandeAmis.marquerTheme(themeActif);
   remplirProfil(document.getElementById('profil'), donnees.profil);
   bandeAmis.remplir(galaxie.systemes, amisDe(galaxie.systemes, donnees));
   if (acces) acces.remplir(donnees.planetes);
@@ -132,6 +137,7 @@ fetch('./galaxie.json')
   .then((r) => r.json())
   .then((g) => {
     galaxie = g;
+    bandeAmis.creerThemes(g.themes);
     afficherSysteme(indexDepuisAdresse(g.systemes, window.location.hash));
     exposerEtatPourTests();
   })
@@ -162,8 +168,19 @@ function voyagerVers(index, sens = index > courant ? 1 : -1) {
   else voyage = { sens, index, phase: 'sortie', debut: performance.now() };
 }
 
+// Suivant / précédent, seulement parmi les systèmes du thème choisi (tous si « Tous »).
 function voyager(sens) {
-  if (galaxie) voyagerVers(voisin(galaxie.systemes.length, courant, sens), sens);
+  if (!galaxie) return;
+  const liste = indicesDuTheme(galaxie.systemes, themeActif);
+  voyagerVers(voisinDans(liste, courant, sens), sens);
+}
+
+// Toucher une pastille de thème : si on n'est pas déjà dans ce thème, on va dans son premier système.
+function choisirTheme(id) {
+  if (!galaxie) return;
+  themeActif = id;
+  bandeAmis.marquerTheme(id);
+  if (id && galaxie.systemes[courant].theme !== id) voyagerVers(indicesDuTheme(galaxie.systemes, id)[0]);
 }
 
 function poserSysteme(decalage, echelle) {
@@ -200,6 +217,7 @@ function majVoyage() {
 function exposerEtatPourTests() {
   window.orbite = {
     systemeId: () => galaxie.systemes[courant].id,
+    themeActif: () => themeActif,
     // Combien de formes 3D la carte graphique garde (doit rester stable d'un voyage à l'autre).
     memoire: () => ({ geometries: renderer.info.memory.geometries }),
     planetes: () =>

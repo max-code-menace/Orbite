@@ -37,3 +37,17 @@ export function sensDuBalayage(dx, dy, dureeMs) {
   if (dureeMs > 700 || Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return 0;
   return dx < 0 ? 1 : -1;
 }
+
+// Les positions des systèmes d'un thème (tous les systèmes si aucun thème n'est choisi).
+export function indicesDuTheme(systemes, theme) {
+  return systemes.map((_, i) => i).filter((i) => !theme || systemes[i].theme === theme);
+}
+
+// Le système d'à côté, mais seulement parmi cette liste (le thème choisi). Si on n'est pas dans la liste
+// (ex. arrivé par le lien d'un ami d'un autre thème), on entre par le début ou par la fin.
+export function voisinDans(liste, index, sens) {
+  if (liste.length === 0) return index;
+  const pos = liste.indexOf(index);
+  if (pos < 0) return sens > 0 ? liste[0] : liste.at(-1);
+  return liste[voisin(liste.length, pos, sens)];
+}

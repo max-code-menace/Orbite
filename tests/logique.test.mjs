@@ -3,7 +3,15 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { creerDecor, tirerAutreType, typesLibres } from '../src/decors.js';
 import { creerCreature, pose } from '../src/creatures.js';
-import { amisDe, indexDepuisAdresse, indexNomme, sensDuBalayage, voisin } from '../src/parcours.js';
+import {
+  amisDe,
+  indexDepuisAdresse,
+  indexNomme,
+  indicesDuTheme,
+  sensDuBalayage,
+  voisin,
+  voisinDans,
+} from '../src/parcours.js';
 import { BUDGET_PIXELS, PALIERS, calculerRatio, creaturesVisibles, palierApres } from '../src/fluidite.js';
 
 const ecrans = {
@@ -150,4 +158,24 @@ test('un balayage doit être long, plutôt horizontal et vif ; un tap ou un doig
   assert.equal(sensDuBalayage(-120, 150, 200), 0); // plutôt vertical (ouvre l'Accès rapide)
   assert.equal(sensDuBalayage(-120, 0, 1500), 0); // trop lent
   assert.equal(sensDuBalayage(3, 2, 50), 0); // un tap
+});
+
+// --- Les thèmes ---
+const themes = [{ theme: 'a' }, { theme: 'b' }, { theme: 'a' }, { theme: 'b' }, { theme: 'a' }];
+
+test('un thème ne garde que ses systèmes ; sans thème, on garde tout', () => {
+  assert.deepEqual(indicesDuTheme(themes, 'a'), [0, 2, 4]);
+  assert.deepEqual(indicesDuTheme(themes, 'b'), [1, 3]);
+  assert.deepEqual(indicesDuTheme(themes, null), [0, 1, 2, 3, 4]);
+});
+
+test("suivant / précédent restent dans le thème, font le tour, et entrent par un bout si on n'y est pas", () => {
+  const a = [0, 2, 4];
+  assert.equal(voisinDans(a, 0, 1), 2);
+  assert.equal(voisinDans(a, 4, 1), 0);
+  assert.equal(voisinDans(a, 0, -1), 4);
+  assert.equal(voisinDans(a, 1, 1), 0); // arrivé d'un autre thème : suivant = premier
+  assert.equal(voisinDans(a, 1, -1), 4); // précédent = dernier
+  assert.equal(voisinDans([3], 3, 1), 3); // un seul système : on reste
+  assert.equal(voisinDans([], 2, 1), 2);
 });
