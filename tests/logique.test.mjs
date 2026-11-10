@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { creerDecor, tirerAutreType, typesLibres } from '../src/decors.js';
 import { creerCreature, pose } from '../src/creatures.js';
+import { amisDe, indexDepuisAdresse, sensDuBalayage, voisin } from '../src/parcours.js';
 import { BUDGET_PIXELS, PALIERS, calculerRatio, creaturesVisibles, palierApres } from '../src/fluidite.js';
 
 const ecrans = {
@@ -111,4 +112,37 @@ test('la créature de la planète libre change de couleur avec le décor', () =>
   c.recolorer('#ff7a2a');
   assert.notEqual(c.objet.children[0], avant);
   assert.equal(c.objet.children.length, 1, "l'ancienne créature n'a pas été retirée");
+});
+
+// --- Le voyage d'un système à l'autre (src/parcours.js) ---
+const liste = [{ id: 'luna', amis: ['noe', 'inconnu'] }, { id: 'noe' }, { id: 'ines' }];
+
+test("l'adresse #noe ouvre le système de Noé ; une adresse inconnue ou abîmée ouvre le premier", () => {
+  assert.equal(indexDepuisAdresse(liste, '#noe'), 1);
+  assert.equal(indexDepuisAdresse(liste, '#NOE'), 1);
+  assert.equal(indexDepuisAdresse(liste, '#personne'), 0);
+  assert.equal(indexDepuisAdresse(liste, ''), 0);
+  assert.equal(indexDepuisAdresse(liste, undefined), 0);
+  assert.equal(indexDepuisAdresse(liste, '#%E0%A4%A'), 0);
+});
+
+test('suivant / précédent font le tour de la liste, sans cul-de-sac', () => {
+  assert.equal(voisin(3, 0, 1), 1);
+  assert.equal(voisin(3, 2, 1), 0);
+  assert.equal(voisin(3, 0, -1), 2);
+  assert.equal(voisin(1, 0, 1), 0);
+});
+
+test('les amis inconnus sont ignorés ; sans amis, la liste est vide', () => {
+  assert.deepEqual(amisDe(liste, liste[0]), [1]);
+  assert.deepEqual(amisDe(liste, liste[1]), []);
+});
+
+test('un balayage doit être long, plutôt horizontal et vif ; un tap ou un doigt qui traîne ne compte pas', () => {
+  assert.equal(sensDuBalayage(-120, 10, 200), 1); // vers la gauche : suivant
+  assert.equal(sensDuBalayage(120, -10, 200), -1); // vers la droite : précédent
+  assert.equal(sensDuBalayage(-30, 0, 100), 0); // trop court
+  assert.equal(sensDuBalayage(-120, 150, 200), 0); // plutôt vertical (ouvre l'Accès rapide)
+  assert.equal(sensDuBalayage(-120, 0, 1500), 0); // trop lent
+  assert.equal(sensDuBalayage(3, 2, 50), 0); // un tap
 });

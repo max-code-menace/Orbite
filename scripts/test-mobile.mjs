@@ -144,12 +144,107 @@ for (const { nom, options } of appareils) {
   await page.locator('.panneau-fermer').click();
   await page.waitForTimeout(800);
 
+  // --- Voyage : balayage horizontal, flèches, amis, adresse ---
+  await verifierVoyage(page, nom);
+
   // --- Étape 7 : les créatures (sur le téléphone seulement : ~13 s de test,
   // et leur comportement ne dépend pas de la taille de l'écran) ---
   if (nom === 'telephone') await verifierCreatures(page);
 
   verifier(erreurs.length === 0, `aucune erreur dans la page${erreurs.length ? ` : ${erreurs.join(' | ')}` : ''}`);
   await page.close();
+}
+
+// Un balayage au doigt (simulé à la souris : la page écoute les « pointer events », qui sont les mêmes).
+async function balayer(page, versLaGauche) {
+  const { width, height } = page.viewportSize();
+  const y = height * 0.5;
+  const [de, vers] = versLaGauche ? [width * 0.6, width * 0.2] : [width * 0.2, width * 0.6];
+  await page.mouse.move(de, y);
+  await page.mouse.down();
+  await page.mouse.move((de + vers) / 2, y + 4, { steps: 3 });
+  await page.mouse.move(vers, y + 6, { steps: 3 });
+  await page.mouse.up();
+  await page.waitForTimeout(900);
+}
+
+async function verifierVoyage(page, nom) {
+  const id = () => page.evaluate(() => window.orbite.systemeId());
+  const nomAffiche = async () => (await page.locator('.profil-nom').textContent())?.trim();
+  verifier((await id()) === 'luna', 'on démarre sur le système de Luna');
+  verifier(
+    (await page.locator('.ami').count()) >= 3,
+    `la bande « amis » montre au moins 3 amis (${await page.locator('.ami').count()})`,
+  );
+  const fleche = await page.locator('.amis-fleche').first().boundingBox();
+  verifier(fleche && fleche.width >= 44 && fleche.height >= 44, 'les flèches sont assez grandes pour le pouce (44 px)');
+
+  await balayer(page, true);
+  verifier((await id()) === 'noe', `balayer vers la gauche ouvre le système suivant (${await id()})`);
+  verifier((await nomAffiche()) === 'Noé Ferrand', `le profil change aussi (${await nomAffiche()})`);
+  verifier((await page.locator('.etiquette').count()) === 5, 'toujours 5 étiquettes (les anciennes sont retirées)');
+  verifier((await page.locator('.acces-ligne').count()) === 5, "l'Accès rapide est rempli pour le nouveau système");
+  verifier(new URL(page.url()).hash === '#noe', "l'adresse suit (#noe)");
+  const pos = await page.evaluate(() => window.orbite.planetes().map((p) => p.echelleIle));
+  verifier(
+    pos.every((e) => Math.abs(e - 1) < 0.001),
+    'les îles ont leur taille normale après le voyage',
+  );
+  await page.screenshot({ path: `${DOSSIER}/${nom}-7-systeme-suivant.png` });
+
+  await balayer(page, false);
+  verifier((await id()) === 'luna', 'balayer vers la droite revient en arrière');
+
+  await page.locator('.amis-fleche').last().click();
+  await page.waitForTimeout(900);
+  verifier((await id()) === 'noe', 'la flèche « suivant » fait la même chose');
+  await page.locator('.ami', { hasText: 'Yanis' }).click();
+  await page.waitForTimeout(900);
+  verifier((await id()) === 'yanis', 'toucher un ami ouvre son système');
+
+  // Au bout de la liste, on revient au début.
+  await page.goto(`${url}#adam`);
+  await page.waitForTimeout(1500);
+  verifier((await id()) === 'adam', "l'adresse #adam ouvre directement le système d'Adam");
+  await page.locator('.amis-fleche').last().click();
+  await page.waitForTimeout(900);
+  verifier((await id()) === 'luna', 'après le dernier système, on revient au premier');
+
+  // Une adresse qui ne veut rien dire ne casse rien.
+  await page.goto(`${url}#%E0%A4%A`);
+  await page.waitForTimeout(1500);
+  verifier((await id()) === 'luna', 'une adresse abîmée ouvre le premier système');
+
+  // Planète ouverte : le balayage ne change pas de système (on ferme d'abord).
+  await page.locator('.etiquette', { hasText: 'Spotify' }).click({ force: true });
+  await page.waitForTimeout(1200);
+  await balayer(page, true);
+  verifier((await id()) === 'luna', 'planète ouverte : balayer ne change pas de système');
+  await page.locator('.panneau-fermer').click();
+  await page.waitForTimeout(800);
+
+  // « Réduire les animations » : le changement est instantané.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.locator('.amis-fleche').last().click();
+  await page.waitForTimeout(150);
+  verifier((await id()) === 'noe', '« réduire les animations » : le changement est immédiat');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+
+  // Une personne qui enchaîne 12 voyages ne doit pas voir la mémoire grossir : on regarde les formes gardées.
+  await page.goto(`${url}?qualite=1`);
+  await page.waitForTimeout(1500);
+  const avant = await page.evaluate(() => window.orbite.memoire());
+  for (let i = 0; i < 12; i++) {
+    await page.locator('.amis-fleche').last().click();
+    await page.waitForTimeout(700);
+  }
+  const apres = await page.evaluate(() => window.orbite.memoire());
+  verifier(
+    apres.geometries <= avant.geometries * 1.5 + 5,
+    `12 voyages de suite : les formes en mémoire ne s'accumulent pas (${avant.geometries} → ${apres.geometries})`,
+  );
+  await page.goto(url);
+  await page.waitForTimeout(1500);
 }
 
 async function verifierCreatures(page) {

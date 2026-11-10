@@ -4,6 +4,8 @@ import { createSun } from './sun.js';
 import { PALIERS, calculerRatio, creaturesVisibles, palierApres } from './fluidite.js';
 import { creerPlanetes } from './planets.js';
 import { remplirProfil, creerAccesRapide, creerPanneau, ecranLarge } from './ui.js';
+import { amisDe, indexDepuisAdresse, sensDuBalayage, voisin } from './parcours.js';
+import { creerBandeAmis } from './amis.js';
 
 const container = document.getElementById('scene');
 
@@ -92,29 +94,101 @@ scene.add(asteroids.mesh);
 const sun = createSun();
 scene.add(sun.group);
 
-// Les planètes arrivent dès que le fichier de données est lu.
+// --- Les systèmes : on en affiche un à la fois ----------------------------
+// Les planètes arrivent dès que le fichier de données est lu. Le système affiché
+// dépend de l'adresse (…/#noe) ; sinon c'est le premier de la liste.
+let galaxie = null;
+let courant = 0; // la position du système affiché dans galaxie.systemes
 let systeme = null;
 let acces = null;
 const conteneurEtiquettes = document.getElementById('etiquettes');
+const bandeAmis = creerBandeAmis(
+  document.getElementById('amis'),
+  (i) => voyagerVers(i),
+  (sens) => voyager(sens),
+);
+
+// Remplace le système affiché par celui-là (sans animation : voir voyagerVers pour l'animation).
+function afficherSysteme(index) {
+  panneau.fermer();
+  if (systeme) {
+    scene.remove(systeme.groupe);
+    systeme.detruire();
+  }
+  courant = index;
+  const donnees = galaxie.systemes[index];
+  remplirProfil(document.getElementById('profil'), donnees.profil);
+  bandeAmis.remplir(galaxie.systemes, amisDe(galaxie.systemes, donnees));
+  if (acces) acces.remplir(donnees.planetes);
+  else acces = creerAccesRapide(document.getElementById('acces'), donnees.planetes, resize);
+  systeme = creerPlanetes(donnees, conteneurEtiquettes, choisir);
+  scene.add(systeme.groupe);
+  // L'adresse suit : la recharger ou la copier ramène sur ce système.
+  history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${donnees.id}`);
+  resize();
+}
+
 fetch('./galaxie.json')
   .then((r) => r.json())
-  .then((galaxie) => {
-    // Pour l'instant (étape G1), on affiche le premier système de la galaxie.
-    const donnees = galaxie.systemes[0];
-    remplirProfil(document.getElementById('profil'), donnees.profil);
-    acces = creerAccesRapide(document.getElementById('acces'), donnees.planetes, resize);
-    systeme = creerPlanetes(donnees, conteneurEtiquettes, choisir);
-    scene.add(systeme.groupe);
-    resize();
+  .then((g) => {
+    galaxie = g;
+    afficherSysteme(indexDepuisAdresse(g.systemes, window.location.hash));
     exposerEtatPourTests();
   })
   .catch((err) => console.error('Impossible de lire galaxie.json', err));
+
+// Si l'adresse change sans recharger la page (lien collé dans l'onglet ouvert, bouton retour),
+// on voyage vers le système nommé. (Nos propres mises à jour de l'adresse ne déclenchent rien.)
+window.addEventListener('hashchange', () => {
+  if (galaxie) voyagerVers(indexDepuisAdresse(galaxie.systemes, window.location.hash));
+});
+
+// --- Le voyage : le système sort sur le côté, le suivant arrive de l'autre ---
+// 0,18 s pour sortir, 0,28 s pour entrer (instantané si « réduire les animations »).
+const T_SORTIE = 0.18;
+const T_ENTREE = 0.28;
+let voyage = null; // { sens, index, phase: 'sortie' | 'entree', debut } pendant le voyage
+
+function voyagerVers(index, sens = index > courant ? 1 : -1) {
+  if (!galaxie || voyage || index === courant) return;
+  if (reduceMotion.matches) afficherSysteme(index);
+  else voyage = { sens, index, phase: 'sortie', debut: performance.now() };
+}
+
+function voyager(sens) {
+  if (galaxie) voyagerVers(voisin(galaxie.systemes.length, courant, sens), sens);
+}
+
+function poserSysteme(decalage, echelle) {
+  systeme.groupe.position.x = decalage;
+  systeme.groupe.scale.setScalar(echelle);
+}
+
+function majVoyage() {
+  if (!voyage) return;
+  const t = (performance.now() - voyage.debut) / 1000;
+  if (voyage.phase === 'sortie') {
+    const k = Math.min(1, t / T_SORTIE);
+    poserSysteme(-voyage.sens * 6 * k * k, 1 - 0.5 * k);
+    if (k < 1) return;
+    afficherSysteme(voyage.index);
+    voyage.phase = 'entree';
+    voyage.debut = performance.now();
+  }
+  const k = Math.min(1, (performance.now() - voyage.debut) / 1000 / T_ENTREE);
+  const reste = (1 - k) ** 3; // arrive vite, puis se pose doucement
+  poserSysteme(voyage.sens * 6 * reste, 1 - 0.5 * reste);
+  if (k >= 1) voyage = null;
+}
 
 // --- État lisible par le test automatique (scripts/test-mobile.mjs) ----------
 // Lecture seule : ça ne change rien à la page, ça permet juste au test de
 // vérifier ce qu'une capture d'écran ne prouve pas (décors présents, animations).
 function exposerEtatPourTests() {
   window.orbite = {
+    systemeId: () => galaxie.systemes[courant].id,
+    // Combien de formes 3D la carte graphique garde (doit rester stable d'un voyage à l'autre).
+    memoire: () => ({ geometries: renderer.info.memory.geometries }),
     planetes: () =>
       systeme.planetes.map((p) => {
         let sommets = 0;
@@ -170,6 +244,35 @@ renderer.domElement.addEventListener('pointerup', (e) => {
   else panneau.fermer(); // toucher à côté referme tout
 });
 
+// --- Balayer à l'horizontale : changer de système ----------------------------
+// Le doigt peut partir du fond ou d'une étiquette ; pas du profil, de la bande, de l'Accès rapide
+// ni du panneau (ils ont leurs propres gestes). Impossible pendant qu'une planète est ouverte.
+let balayage = null;
+let dernierBalayage = 0;
+const peutBalayer = (cible) => cible === renderer.domElement || cible.closest?.('#etiquettes');
+window.addEventListener('pointerdown', (e) => {
+  balayage = peutBalayer(e.target) ? { x: e.clientX, y: e.clientY, temps: performance.now() } : null;
+});
+window.addEventListener('pointerup', (e) => {
+  if (!balayage) return;
+  const sens = sensDuBalayage(e.clientX - balayage.x, e.clientY - balayage.y, performance.now() - balayage.temps);
+  balayage = null;
+  if (sens === 0) return;
+  dernierBalayage = performance.now();
+  if (focus == null) voyager(sens);
+});
+window.addEventListener('pointercancel', () => {
+  balayage = null;
+});
+// Un balayage qui finit sur une étiquette ne doit pas, en plus, ouvrir sa planète.
+conteneurEtiquettes.addEventListener(
+  'click',
+  (e) => {
+    if (performance.now() - dernierBalayage < 400) e.stopPropagation();
+  },
+  true,
+);
+
 // --- Compteur d'images par seconde (ajouter ?fps à la fin du lien) --------
 const fpsBox = document.getElementById('fps');
 const showFps = new URLSearchParams(window.location.search).has('fps');
@@ -194,6 +297,7 @@ function frame() {
   asteroids.update(elapsed);
   sun.update(elapsed, motion);
   majCamera(delta);
+  majVoyage();
   if (systeme) systeme.update(elapsed, motion, camera, window.innerWidth, window.innerHeight);
 
   renderer.render(scene, camera);
@@ -314,8 +418,11 @@ function resize() {
 
   // La place libre pour le système : sous le profil, et au-dessus de l'Accès
   // rapide à moitié ouvert (téléphone) ou à gauche de sa colonne (tablette).
+  // La bande « amis » se range juste sous le profil ; le système se cadre sous elle.
   const profil = document.getElementById('profil');
-  const haut = profil.getBoundingClientRect().bottom + 8;
+  const bande = document.getElementById('amis');
+  bande.style.top = `${profil.getBoundingClientRect().bottom + 6}px`;
+  const haut = bande.getBoundingClientRect().bottom + 6;
   const bas = h - (acces ? acces.hauteurRepos() : 0) - 4;
   const zone = Math.max(h * 0.35, bas - haut);
   const droite = ecranLarge.matches ? document.getElementById('acces').getBoundingClientRect().left - 8 : w;

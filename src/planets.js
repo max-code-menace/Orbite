@@ -257,7 +257,14 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
     return p.theme;
   }
 
-  return { groupe, planetes, update, planeteSous, changerDecor, montrerCreatures };
+  // Quand on quitte ce système : retire les étiquettes de la page et libère les formes de la mémoire
+  // (sinon chaque voyage en laisserait des dizaines). Les matières des décors sont partagées : on les garde.
+  function detruire() {
+    for (const p of planetes) p.etiquette.remove();
+    groupe.traverse((o) => o.geometry?.dispose());
+  }
+
+  return { groupe, planetes, update, planeteSous, changerDecor, montrerCreatures, detruire };
 }
 
 // Met sur l'île les couleurs et le décor de son type actuel.

@@ -50,33 +50,37 @@ export const ecranLarge = window.matchMedia('(orientation: landscape) and (min-w
 // Une liste à moitié ouverte au départ, qu'on remonte du doigt.
 export function creerAccesRapide(feuille, planetes, onChange) {
   const liste = feuille.querySelector('.acces-liste');
-  liste.replaceChildren();
 
-  for (const p of planetes) {
-    const lien = p.liens?.[0];
-    const theme = themes[p.id] ?? themes.libre;
+  // Remplit la liste avec les planètes d'un système (rappelée à chaque changement de système).
+  function remplir(planetes) {
+    liste.replaceChildren();
+    for (const p of planetes) {
+      const lien = p.liens?.[0];
+      const theme = themes[p.id] ?? themes.libre;
 
-    const a = el('a', 'acces-ligne');
-    if (lien) {
-      a.href = lien.url;
-      a.target = '_blank';
-      a.rel = 'noopener';
+      const a = el('a', 'acces-ligne');
+      if (lien) {
+        a.href = lien.url;
+        a.target = '_blank';
+        a.rel = 'noopener';
+      }
+      const icone = el('span', 'acces-icone');
+      icone.style.color = theme.anneau;
+      icone.style.background = `color-mix(in srgb, ${theme.anneau} 18%, transparent)`;
+      icone.innerHTML = icons[p.id] ?? icons.libre;
+
+      const textes = el('span', 'acces-textes');
+      textes.append(el('span', 'acces-nom', p.nom), el('span', 'acces-lien', lien ? lien.titre : 'Aucun lien'));
+
+      const fleche = el('span', 'acces-fleche');
+      fleche.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
+
+      a.append(icone, textes, fleche);
+      liste.appendChild(a);
     }
-    const icone = el('span', 'acces-icone');
-    icone.style.color = theme.anneau;
-    icone.style.background = `color-mix(in srgb, ${theme.anneau} 18%, transparent)`;
-    icone.innerHTML = icons[p.id] ?? icons.libre;
-
-    const textes = el('span', 'acces-textes');
-    textes.append(el('span', 'acces-nom', p.nom), el('span', 'acces-lien', lien ? lien.titre : 'Aucun lien'));
-
-    const fleche = el('span', 'acces-fleche');
-    fleche.innerHTML =
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
-
-    a.append(icone, textes, fleche);
-    liste.appendChild(a);
   }
+  remplir(planetes);
 
   // --- Le glissement du doigt ---
   let ouverte = false;
@@ -187,6 +191,11 @@ export function creerAccesRapide(feuille, planetes, onChange) {
     hauteurRepos: () => (ecranLarge.matches ? 0 : feuille.offsetHeight - decalageFerme),
     hauteurVisible,
     mesurer,
+    // Change la liste (autre système) puis recalcule la hauteur de la feuille.
+    remplir: (nouvelles) => {
+      remplir(nouvelles);
+      mesurer();
+    },
   };
 }
 
