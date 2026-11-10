@@ -46,9 +46,7 @@
       "id": "libre",
       "nom": "Planète libre",
       "description": "Ce que je veux, quand je veux.",
-      "liens": [
-        { "titre": "Mon lien libre", "url": "https://example.com/" }
-      ]
+      "liens": [{ "titre": "Mon lien libre", "url": "https://example.com/" }]
     }
   ]
 }

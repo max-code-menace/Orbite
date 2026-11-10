@@ -59,18 +59,21 @@ function matiere(color, extra = {}) {
 function creerIle(theme, r = 0.8) {
   const ile = new THREE.Group();
 
-  const dessus = new THREE.Mesh(bosseler(new THREE.CylinderGeometry(r, r * 0.97, 0.16, 10), 0.04), matiere(theme.herbe));
+  const dessus = new THREE.Mesh(
+    bosseler(new THREE.CylinderGeometry(r, r * 0.97, 0.16, 10), 0.04),
+    matiere(theme.herbe),
+  );
   dessus.position.y = 0.08;
   ile.add(dessus);
 
-  const terre = new THREE.Mesh(bosseler(new THREE.CylinderGeometry(r * 0.97, r * 0.85, 0.22, 10), 0.05), matiere(theme.terre));
+  const terre = new THREE.Mesh(
+    bosseler(new THREE.CylinderGeometry(r * 0.97, r * 0.85, 0.22, 10), 0.05),
+    matiere(theme.terre),
+  );
   terre.position.y = -0.11;
   ile.add(terre);
 
-  const rocher = new THREE.Mesh(
-    bosseler(new THREE.ConeGeometry(r * 0.85, r * 1.3, 10, 3), 0.1, true),
-    matiere(ROCHE),
-  );
+  const rocher = new THREE.Mesh(bosseler(new THREE.ConeGeometry(r * 0.85, r * 1.3, 10, 3), 0.1, true), matiere(ROCHE));
   rocher.rotation.x = Math.PI; // la pointe vers le bas
   rocher.position.y = -0.22 - (r * 1.3) / 2;
   ile.add(rocher);
@@ -136,7 +139,8 @@ export function creerPlanetes(donnees, conteneurEtiquettes, onChoisir) {
 
   donnees.planetes.forEach((p, i) => {
     // La planète libre tire son décor (et ses couleurs) au hasard.
-    const typeLibre = themes[p.id] && p.id !== 'libre' ? null : typesLibres[Math.floor(Math.random() * typesLibres.length)];
+    const typeLibre =
+      themes[p.id] && p.id !== 'libre' ? null : typesLibres[Math.floor(Math.random() * typesLibres.length)];
     const theme = typeLibre ? decorsLibres[typeLibre].couleurs : themes[p.id];
     const place = places[p.id] ?? { rayon: 2.6 + i * 0.7, angle: i * 72 };
 

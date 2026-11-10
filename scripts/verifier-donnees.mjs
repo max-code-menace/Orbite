@@ -38,7 +38,8 @@ if (!Array.isArray(planetes)) {
       if (p.liens.length > 3) erreurs.push(`${qui} : 3 liens au maximum (il y en a ${p.liens.length})`);
       p.liens.forEach((l, j) => {
         if (!texte(l?.titre)) erreurs.push(`${qui}, lien ${j + 1} : "titre" manque`);
-        if (!/^https?:\/\/[^\s]+$/.test(l?.url ?? '')) erreurs.push(`${qui}, lien ${j + 1} : l'adresse doit commencer par https:// (reçu : "${l?.url}")`);
+        if (!/^https?:\/\/[^\s]+$/.test(l?.url ?? ''))
+          erreurs.push(`${qui}, lien ${j + 1} : l'adresse doit commencer par https:// (reçu : "${l?.url}")`);
       });
     }
   });

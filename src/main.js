@@ -129,7 +129,7 @@ function exposerEtatPourTests() {
         return {
           id: p.donnees.id,
           typeLibre: p.typeLibre,
-          couleurAnneau: '#' + p.anneau.userData.matieres[0].color.getHexString(),
+          couleurAnneau: `#${p.anneau.userData.matieres[0].color.getHexString()}`,
           echelleIle: p.ile.scale.x,
           sommetsDecor: sommets,
           signature: p.decor.signature ? p.decor.signature() : null,
