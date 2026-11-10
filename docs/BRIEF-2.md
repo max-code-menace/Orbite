@@ -1,4 +1,4 @@
-# Orbite — brief n°2 : de la page à l'application (validé le 10/11/2026)
+# Orbite — brief n°2 : de la page à l'application (validé le 10/11/2026 ; **phase 1 « galaxie » en pause**, voir `ETAT.md`)
 
 Suite du prototype 1 (`docs/BRIEF.md` : un seul système, ses 5 planètes, ses liens). Décidé le 10/11/2026 :
 on avance vers l'application. **Ordre : la galaxie d'abord, la messagerie ensuite.** Les îles actuelles seront

@@ -1,6 +1,6 @@
 # Orbite — état du projet
 
-Dernière mise à jour : 10 novembre 2026, session 4 (étape 7 fusionnée ; virage vers l'application, étape G1).
+Dernière mise à jour : 10 novembre 2026, fin de session 4 (G1 fusionnée et en ligne ; galaxie mise en pause).
 
 ## Le plan en 8 étapes
 
@@ -30,7 +30,14 @@ Dernière mise à jour : 10 novembre 2026, session 4 (étape 7 fusionnée ; vira
 - À surveiller : une fois sur 3 passages du test (10/11, pendant qu'un autre test tournait en même temps), la
   capture « planète ouverte » du téléphone était vide (fond violet, aucune 3D). Non reproduit ensuite, ni sur la
   branche principale : cause inconnue. Le test ne vérifie pas que la 3D est dessinée derrière le panneau.
-- **Prochaine étape : G2** (l'écran galaxie). Question en suspens pour la phase 2 : la messagerie, entre qui ?
+- G1 fusionnée (PR n°6) et en ligne (vérification GitHub ✅).
+- **Galaxie mise en pause par la personne (fin de session 4)** : la carte de systèmes d'inconnus (Inès, Noé,
+  Milo…) ne lui semble ni intuitive ni agréable. Ce qu'elle garde : cliquer sur un lien en bio et arriver sur le
+  système solaire de la personne, « c'est trop bien ». **La question à travailler (dans une nouvelle
+  conversation) : comment donner envie de rester dans l'application quand on sort du système de la personne
+  dont on a cliqué le lien — qu'est-ce qu'on fait ensuite ?** Les étapes G2 à G5 de `docs/BRIEF-2.md` ne sont
+  donc plus le plan ; G1 (plusieurs systèmes dans les données) reste utile quelle que soit la réponse.
+- Question toujours en suspens pour la messagerie : entre qui ?
 - Auditeur du harnais : vers le 10 décembre 2026.
 
 ## Mesures faites sur les vrais appareils
