@@ -15,8 +15,11 @@ La page se remet en ligne toute seule à chaque envoi sur la branche principale,
 ```
 npm install
 npm run dev       # page de test sur l'ordinateur
-npm run verifier  # vérifie les données, construit, teste sur téléphone et tablette
+npm run check     # vérification rapide, niveau choisi tout seul (1 à 3 s)
+npm run verifier  # vérifie les données, construit, teste sur téléphone et tablette (~30 s)
 ```
+
+Le harnais de vérification (niveaux, hooks, agents, temps mesurés) est décrit dans `docs/HARNAIS.md`.
 
 Les règles du projet sont dans `CLAUDE.md`, le brief dans `docs/BRIEF.md`, l'avancement dans `docs/ETAT.md`.
 
