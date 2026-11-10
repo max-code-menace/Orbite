@@ -1,0 +1,66 @@
+# Orbite — état du projet
+
+Dernière mise à jour : 10 novembre 2026, après l'étape 5 et la mise en place des garde-fous.
+
+## Le plan en 8 étapes
+
+| Étape | Contenu | État |
+|---|---|---|
+| 1 | Ciel étoilé, astéroïdes, soleil, mise en ligne | ✅ fait, validé sur appareil |
+| 2 | 5 îles flottantes, orbites en pointillé, anneaux néon, étiquettes | ✅ fait, validé sur appareil |
+| 3 | Profil en haut, Accès rapide en bas (glissable), système cadré entre les deux | ✅ fait, validé sur appareil |
+| 4 | Toucher une planète : caméra qui s'approche + panneau de liens | ✅ fait, validé sur appareil |
+| 5 | Décors des îles | ✅ fait ; envoyé, **pas encore mesuré sur appareil** (fluidité à vérifier) |
+| 6 | Bouton « Changer de décor » sur la planète libre, avec animation | ⏳ à faire |
+| 7 | Petites créatures décoratives (facultatives, à retirer en premier si ça rame) | ⏳ à faire |
+| 8 | Derniers réglages de fluidité + checklist des critères de réussite du brief | ⏳ à faire |
+
+## Mesures faites sur les vrais appareils
+
+- **iPhone 15 (Safari)** : 60 img/s constant, au repos comme pendant le rapprochement (après l'étape 4).
+- **Tablette Samsung S10 Lite (Chrome)** : 60-67 img/s à l'étape 1 ; tombée à **24 img/s** à l'étape 4 ;
+  remontée à **80-89 img/s** après avoir retiré le flou `backdrop-filter`, plafonné la résolution et rendu le
+  canvas opaque. Le mode allégé automatique n'a donc pas eu à agir sur elle.
+- Rien n'a encore été mesuré sur un vrai « vieux » téléphone.
+
+## Comment c'est construit (fichiers)
+
+| Fichier | Rôle |
+|---|---|
+| `public/systeme.json` | Les données : profil + 5 planètes (id, nom, description, liens). Modifiable à la main. |
+| `src/main.js` | Moteur 3D, caméra (repos / rapprochement), cadrage, toucher, fluidité (budget de pixels, paliers du mode allégé). |
+| `src/sky.js` | Étoiles (un seul objet, scintillement dans le shader) et astéroïdes (`InstancedMesh`). |
+| `src/sun.js` | Soleil à facettes, halos, lumière chaude. |
+| `src/planets.js` | Îles flottantes, anneaux, orbites, étiquettes HTML, zones de toucher invisibles, couleurs par planète. |
+| `src/decors.js` | Décors des îles. `Assemblage` fusionne les pièces fixes d'une île en un seul objet. Décors de la planète libre : `decorsLibres` (foret, cristaux, champignons, glace, volcan). |
+| `src/ui.js` | Profil, Accès rapide (feuille glissable ; colonne fixe sur tablette à l'horizontale), panneau d'une planète. |
+| `src/icons.js` | Icônes maison (pas de vrais logos). |
+| `src/style.css` | Styles. Pas de `backdrop-filter`. |
+| `scripts/verifier-donnees.mjs` | Vérifie `systeme.json` (JSON valide, 5 planètes, liens en https). |
+| `scripts/test-mobile.mjs` | Test Playwright sur téléphone et tablette : 3D affichée, étiquettes, Accès rapide, ouverture/fermeture du panneau, aucune erreur. Captures dans `test-resultats/`. |
+| `.github/workflows/deploy.yml` | Sur chaque envoi : `npm run verifier`. Sur la branche principale seulement, et si tout passe : mise en ligne GitHub Pages. |
+
+## Décisions prises (et pourquoi)
+
+- **Three.js sans React**, construit avec Vite : un seul écran, page plus légère, s'ouvre plus vite en 4G.
+- **Îles flottantes** plutôt que boules rondes (choix de la personne, d'après ses maquettes).
+- **Plan des orbites incliné vers la caméra** (`INCLINAISON` dans `planets.js`) : les orbites restent rondes à
+  l'écran tandis que les îles, droites, montrent leur rocher.
+- **Pas de flou d'arrière-plan** : c'était la cause du passage de la tablette à 24 img/s.
+- **Mode allégé automatique** : sous 50 img/s pendant 2 s, la finesse baisse d'un palier (4 paliers).
+  `?fps` affiche le compteur et la finesse ; `?qualite=1..4` force un palier pour tester.
+- **Formes construites dans le code** pour ce prototype. Le rendu « vraies îles » des maquettes demandera des
+  modèles faits dans Blender (format `.glb`, ~1-2 Mo max par île), chargés à la place de `creerIle` + `creerDecor`.
+  Décidé avec la personne : on valide d'abord le prototype.
+- **Sur tablette à l'horizontale**, l'Accès rapide devient une colonne fixe à droite (sinon le système était minuscule).
+- **La planète libre** tire son décor et ses couleurs au hasard au chargement (`typesLibres`). L'étape 6 doit
+  permettre de le changer sans recharger : il faudra pouvoir recolorer l'île (`creerIle`) et remplacer `decor.surIle`.
+
+## Ce qu'il faut savoir pour la suite
+
+- Le navigateur garde la page en cache jusqu'à ~10 minutes : donner des liens avec `&v=N` (dernier utilisé : `v=9`).
+- Le compte GitHub Pages est activé avec la source « GitHub Actions ». La branche principale du dépôt est
+  `ccr-be406ff5-wxbiv4` : c'est elle qui est mise en ligne.
+- Étape 7 : si les créatures font baisser la fluidité, elles doivent être les premières désactivées par le mode allégé.
+- Étape 8 : le brief demande aussi « moins d'étoiles, pas de lueurs » dans le mode allégé ; aujourd'hui seuls les
+  paliers de résolution existent.

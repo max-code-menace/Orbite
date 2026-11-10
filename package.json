@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview --host"
+    "preview": "vite preview --host",
+    "verifier": "node scripts/verifier-donnees.mjs && vite build && node scripts/test-mobile.mjs"
   },
   "dependencies": {
     "three": "0.187.0"
   },
   "devDependencies": {
+    "playwright": "^1.63.0",
     "vite": "8.3.7"
   }
 }

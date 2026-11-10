@@ -1,9 +1,14 @@
-# Met la page en ligne sur GitHub Pages à chaque envoi de code.
-name: Mise en ligne
+# Vérifie la page à chaque envoi de code, et la met en ligne seulement si tout passe.
+#
+# - Sur n'importe quelle branche : vérification du fichier de données, construction,
+#   test automatique sur téléphone et tablette (captures téléchargeables dans « Artifacts »).
+# - Sur la branche principale du dépôt uniquement : mise en ligne sur GitHub Pages.
+#   Si un test échoue, la mise en ligne n'a pas lieu : la page en ligne reste l'ancienne.
+name: Vérification et mise en ligne
 
 on:
   push:
-    branches: [ccr-be406ff5-wxbiv4, main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -12,11 +17,11 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  verifier:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,13 +30,25 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - run: npx playwright install --with-deps chromium
+      - name: Vérifier les données, construire et tester sur mobile
+        run: npm run verifier
+      - name: Garder les captures d'écran du test
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: captures-test
+          path: test-resultats/
+          if-no-files-found: ignore
+      - name: Préparer la mise en ligne
+        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
-  deploy:
-    needs: build
+  mettre-en-ligne:
+    needs: verifier
+    if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
     environment:
       name: github-pages
